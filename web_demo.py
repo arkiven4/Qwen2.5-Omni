@@ -28,7 +28,7 @@ def _load_model_processor(args):
                                                     attn_implementation='flash_attention_2',
                                                     device_map=device_map)
     else:
-        model = Qwen2_5OmniModel.from_pretrained(args.checkpoint_path, device_map=device_map)
+        model = Qwen2_5OmniModel.from_pretrained(args.checkpoint_path, device_map=device_map, torch_dtype='auto')
 
     processor = Qwen2_5OmniProcessor.from_pretrained(args.checkpoint_path)
     return model, processor
