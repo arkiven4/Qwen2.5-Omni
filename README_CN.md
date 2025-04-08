@@ -41,6 +41,7 @@
   - [使用提示](#使用提示)
   - [更多使用用例的 Cookbooks](#更多使用用例的-cookbooks)
   - [API 推理](#api-推理)
+  - [自定义模型设定](#自定义模型设定)
 - [和 Qwen2.5-Omni 对话](#和-qwen25-omni-对话)
   - [在线演示](#在线演示)
   - [启动本地网页演示](#启动本地网页演示)
@@ -996,6 +997,33 @@ print("".join(text))
 wav_bytes = base64.b64decode(audio_string)
 wav_array = np.frombuffer(wav_bytes, dtype=np.int16)
 sf.write("output.wav", wav_array, samplerate=24000)
+```
+
+### 自定义模型设定
+
+由于Qwen2.5-Omni在使用[音频输出](#音频输出的提示词)时（包括本地部署和API推理）并不支持prompt的设定，因此我们建议如果您需要对模型的输出进行一定的控制或者对模型的人设等进行修改，可以尝试在对话模板中加入如下类似的设定：
+
+```python
+conversation = [
+    {
+        "role": "user",
+        "content": [
+            {"type": "text", "text": "You are a shopping guide, now responsible for introducing various products."},
+        ],
+    },
+    {
+        "role": "assistant",
+        "content": [
+            {"type": "text", "text": "Sure, I got it."},
+        ],
+    },
+    {
+        "role": "user",
+        "content": [
+            {"type": "text", "text": "Who are you?"},
+        ],
+    },
+]
 ```
 
 ## 和 Qwen2.5-Omni 对话
