@@ -42,6 +42,7 @@ We release **Qwen2.5-Omni**, the new flagship end-to-end multimodal model in the
   - [Usage Tips](#usage-tips)
   - [Cookbooks for More Usage Cases](#cookbooks-for-more-usage-cases)
   - [API inference](#api-inference)
+  - [Customization settings](#customization-settings)
 - [Chat with Qwen2.5-Omni](#chat-with-qwen25-omni)
   - [Online Demo](#online-demo)
   - [Launch Local Web UI Demo](#launch-local-web-ui-demo)
@@ -998,6 +999,33 @@ print("".join(text))
 wav_bytes = base64.b64decode(audio_string)
 wav_array = np.frombuffer(wav_bytes, dtype=np.int16)
 sf.write("output.wav", wav_array, samplerate=24000)
+```
+
+### Customization settings
+
+Since Qwen2.5-Omni does not support prompt settings when using [audio output](#prompt-for-audio-output) (including local deployment and API inference), we suggest that if you need to control the output of the model or modify the personality settings of the model, you can try adding similar content to the conversation template as follows:
+
+```python
+conversation = [
+    {
+        "role": "user",
+        "content": [
+            {"type": "text", "text": "You are a shopping guide, now responsible for introducing various products."},
+        ],
+    },
+    {
+        "role": "assistant",
+        "content": [
+            {"type": "text", "text": "Sure, I got it."},
+        ],
+    },
+    {
+        "role": "user",
+        "content": [
+            {"type": "text", "text": "Who are you?"},
+        ],
+    },
+]
 ```
 
 ## Chat with Qwen2.5-Omni
