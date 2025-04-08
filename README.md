@@ -1084,11 +1084,14 @@ We recommend using vLLM for fast Qwen2.5-Omni deployment and inference. You need
 
 ### Installation
 ```bash
-pip install git+https://github.com/huggingface/transformers@d40f54fc2f1524458669048cb40a8d0286f5d1d2
+pip install git+https://github.com/huggingface/transformers@f742a644ca32e65758c3adb36225aef1731bd2a8
 pip install accelerate
 pip install qwen-omni-utils
 git clone -b qwen2_omni_public_v1 https://github.com/fyabc/vllm.git
 cd vllm
+git checkout d40f54fc2f1524458669048cb40a8d0286f5d1d2
+pip3 install setuptools_scm
+pip3 install -r requirements/cuda.txt
 pip install .
 ```
 
