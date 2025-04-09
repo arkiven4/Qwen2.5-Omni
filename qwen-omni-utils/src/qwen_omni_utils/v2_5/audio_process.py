@@ -1,3 +1,6 @@
+import base64
+from io import BytesIO
+
 import audioread
 import av
 import librosa
@@ -24,12 +27,16 @@ def process_audio_info(conversations: list[dict] | list[list[dict]], use_audio_i
                 if ele["type"] == "audio":
                     if "audio" in ele:
                         path = ele["audio"]
-                        if path.startswith("http://") or path.startswith("https://"):
-                            audios.append(librosa.load(audioread.ffdec.FFmpegAudioFile(path), sr=16000)[0])
-                        elif isinstance(path, np.ndarray):
+                        if isinstance(path, np.ndarray):
                             if path.ndim > 1:
                                 raise ValueError("Support only mono audio")
                             audios.append(path)
+                        elif path.startswith("data:audio"):
+                            _, base64_data = path.split("base64,", 1)
+                            data = base64.b64decode(base64_data)
+                            audios.append(librosa.load(BytesIO(data), sr=16000)[0])
+                        elif path.startswith("http://") or path.startswith("https://"):
+                            audios.append(librosa.load(audioread.ffdec.FFmpegAudioFile(path), sr=16000)[0])
                         elif path.startswith("file://"):
                             audios.append(librosa.load(path[len("file://") :], sr=16000)[0])
                         else:
