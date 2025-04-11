@@ -22,7 +22,8 @@
 </a>
 
 ## 新闻
-* 2025.03.29: ⭐️⭐️⭐️ Qwen2.5-Omni 达到 Hugging Face Trending 榜的 top-1! 
+* 2025.04.11: 我们正式发布了支持音频输出的vllm版本！请从源码或者我们的镜像中来体验。
+* 2025.04.02: ⭐️⭐️⭐️ Qwen2.5-Omni 达到 Hugging Face Trending 榜的 top-1! 
 * 2025.03.29: ⭐️⭐️⭐️ Qwen2.5-Omni 达到 Hugging Face Trending 榜的 top-2! 
 * 2025.03.26: 与Qwen2.5-Omni的实时交互体验已经在 [Qwen Chat](https://chat.qwen.ai/) 上线，欢迎体验!
 * 2025.03.26: 我们发布了 [Qwen2.5-Omni](https://huggingface.co/collections/Qwen/qwen25-omni-67de1e5f0f9464dc6314b36e). 对于更多的信息请访问我们的[博客](https://qwenlm.github.io/zh/blog/qwen2.5-omni/)!
@@ -634,7 +635,7 @@ Qwen2.5-Omni在包括图像，音频，音视频等各种模态下的表现都�
 接下来，我们将提供如何在🤖 ModelScope和🤗 Transformers上使用 Qwen2.5-Omni. 由于Qwen2.5-Omni的代码在Hugging Face transformers中目前处于未合并阶段，尚未并入主分支，我们建议您从源代码构建：
 ```
 pip uninstall transformers
-pip install git+https://github.com/huggingface/transformers@f742a644ca32e65758c3adb36225aef1731bd2a8
+pip install git+https://github.com/BakerBunker/transformers@21dbefaa54e5bf180464696aa70af0bfc7a61d53
 pip install accelerate
 ```
 否则您可能会遇到以下错误：
@@ -647,10 +648,10 @@ KeyError: 'qwen2_5_omni'
 
 ```bash
 # 非常建议使用`[decord]`特性来获取更快的视频读取速度
-pip install qwen-omni-utils[decord]
+pip install qwen-omni-utils[decord] -U
 ```
 
-如果您未使用Linux操作系统，您可能无法从PyPI安装`decord`。 在这种情况下，您可以使用`pip install qwen-omni-utils`，它将回退到使用torchvision进行视频处理。 但是，您仍然可以[从源代码安装decord](https://github.com/dmlc/decord?tab=readme-ov-file#install-from-source)，以在加载视频时使用decord。
+如果您未使用Linux操作系统，您可能无法从PyPI安装`decord`。 在这种情况下，您可以使用`pip install qwen-omni-utils -U`，它将回退到使用torchvision进行视频处理。 但是，您仍然可以[从源代码安装decord](https://github.com/dmlc/decord?tab=readme-ov-file#install-from-source)，以在加载视频时使用decord。
 
 此外，我们还准备了一些 [cookbooks](https://github.com/QwenLM/Qwen2.5-Omni/tree/main/cookbooks) 来进行能力展示, 包括音频理解、语音对话、屏幕录制交互、视频信息提取、多模态对话等等，敬请访问。
 
@@ -661,14 +662,14 @@ pip install qwen-omni-utils[decord]
 ```python
 import soundfile as sf
 
-from transformers import Qwen2_5OmniModel, Qwen2_5OmniProcessor
+from transformers import Qwen2_5OmniForConditionalGeneration, Qwen2_5OmniProcessor
 from qwen_omni_utils import process_mm_info
 
 # default: Load the model on the available device(s)
-model = Qwen2_5OmniModel.from_pretrained("Qwen/Qwen2.5-Omni-7B", torch_dtype="auto", device_map="auto")
+model = Qwen2_5OmniForConditionalGeneration.from_pretrained("Qwen/Qwen2.5-Omni-7B", torch_dtype="auto", device_map="auto")
 
 # 我们建议启用 flash_attention_2 以获取更快的推理速度以及更低的显存占用.
-# model = Qwen2_5OmniModel.from_pretrained(
+# model = Qwen2_5OmniForConditionalGeneration.from_pretrained(
 #     "Qwen/Qwen2.5-Omni-7B",
 #     torch_dtype="auto",
 #     device_map="auto",
@@ -696,7 +697,7 @@ USE_AUDIO_IN_VIDEO = True
 # Preparation for inference
 text = processor.apply_chat_template(conversation, add_generation_prompt=True, tokenize=False)
 audios, images, videos = process_mm_info(conversation, use_audio_in_video=USE_AUDIO_IN_VIDEO)
-inputs = processor(text=text, audios=audios, images=images, videos=videos, return_tensors="pt", padding=True, use_audio_in_video=USE_AUDIO_IN_VIDEO)
+inputs = processor(text=text, audio=audios, images=images, videos=videos, return_tensors="pt", padding=True, use_audio_in_video=USE_AUDIO_IN_VIDEO)
 inputs = inputs.to(model.device).to(model.dtype)
 
 # Inference: Generation of the output text and audio
@@ -714,7 +715,7 @@ sf.write(
 <details>
 <summary>最小GPU内存需求</summary>
 
-| 精度 | 15(s) 音频 | 30(s) 音频 | 60(s) 音频 |
+| 精度 | 15(s) 视频 | 30(s) 视频 | 60(s) 视频 |
 |-----------| ------------- | --------- | -------------- |
 | FP32      | 93.56 GB      | 不推荐 | 不推荐      |
 | BF16      | 31.11 GB      | 41.85 GB  | 60.19 GB       |
@@ -810,7 +811,7 @@ USE_AUDIO_IN_VIDEO = True
 text = processor.apply_chat_template(conversations, add_generation_prompt=True, tokenize=False)
 audios, images, videos = process_mm_info(conversations, use_audio_in_video=USE_AUDIO_IN_VIDEO)
 
-inputs = processor(text=text, audios=audios, images=images, videos=videos, return_tensors="pt", padding=True, use_audio_in_video=USE_AUDIO_IN_VIDEO)
+inputs = processor(text=text, audio=audios, images=images, videos=videos, return_tensors="pt", padding=True, use_audio_in_video=USE_AUDIO_IN_VIDEO)
 inputs = inputs.to(model.device).to(model.dtype)
 
 # Batch Inference
@@ -843,7 +844,7 @@ audios, images, videos = process_mm_info(conversations, use_audio_in_video=True)
 ```
 ```python
 # 第二处，在模型处理中
-inputs = processor(text=text, audios=audios, images=images, videos=videos, return_tensors="pt", 
+inputs = processor(text=text, audio=audios, images=images, videos=videos, return_tensors="pt", 
                    padding=True, use_audio_in_video=True)
 ```
 ```python
@@ -853,25 +854,24 @@ text_ids, audio = model.generate(**inputs, use_audio_in_video=True)
 值得注意的是，在多轮对话过程中，`use_audio_in_video`参数在这几个地方必须设置为相同的值，否则可能会出现非预期的结果。
 
 #### 是否使用音频输出
-模型支持文本和音频输出，如果用户不需要音频输出，可以在`from_pretrained`函数中设置`enable_audio_output=False`，此选项将节省约`~2GB`的GPU内存，但`generate`函数的`return_audio`选项将只能设置为`False`。
+模型支持文本和音频输出，如果用户不需要音频输出，可以在模型加载完毕后调用`model.disable_talker()`，此选项将节省约`2GB`的GPU内存，但`generate`函数的`return_audio`选项将只能设置为`False`。
 
 ```python
-model = Qwen2_5OmniModel.from_pretrained(
+model = Qwen2_5OmniForConditionalGeneration.from_pretrained(
     "Qwen/Qwen2.5-Omni-7B",
     torch_dtype="auto",
-    device_map="auto",
-    enable_audio_output=False,
+    device_map="auto"
 )
+model.disable_talker()
 ```
 
-为了获得灵活的体验，我们建议在通过`from_pretrained`函数初始化模型时设置`enable_audio_output`为`True`，然后在调用`generate`函数时根据需要决定是否返回音频。当`return_audio`设置为`False`时，模型将仅返回文本输出以更快地获取文本响应。
+为了获得灵活的体验，我们建议在调用`generate`函数时根据需要决定是否返回音频。当`return_audio`设置为`False`时，模型将仅返回文本输出以更快地获取文本响应。
 
-```python
-model = Qwen2_5OmniModel.from_pretrained(
+``python
+model = Qwen2_5OmniForConditionalGeneration.from_pretrained(
     "Qwen/Qwen2.5-Omni-7B",
     torch_dtype="auto",
-    device_map="auto",
-    enable_audio_output=True,
+    device_map="auto"
 )
 ...
 text_ids = model.generate(**inputs, return_audio=False)
@@ -886,14 +886,14 @@ Qwen2.5-Omni 支持修改输出语音的音色类型，`"Qwen/Qwen2.5-Omni-7B"`�
 | Chelsie    | 女 | 甜美，温婉，明亮，轻柔|
 | Ethan      | 男   | 阳光，活力，轻快，亲和|
 
-用户可以使用`generate`函数的`spk`参数来指定音色类型。默认情况下，如果没有指定`spk`，则默认音色类型为`Chelsie`。
+用户可以使用`generate`函数的`speaker`参数来指定音色类型。默认情况下，如果没有指定`speaker`，则默认音色类型为`Chelsie`。
 
 ```python
-text_ids, audio = model.generate(**inputs, spk="Chelsie")
+text_ids, audio = model.generate(**inputs, speaker="Chelsie")
 ```
 
 ```python
-text_ids, audio = model.generate(**inputs, spk="Ethan")
+text_ids, audio = model.generate(**inputs, speaker="Ethan")
 ```
 
 #### 使用Flash-Attention 2加速生成
@@ -909,9 +909,9 @@ pip install -U flash-attn --no-build-isolation
 为了加载并运行使用FlashAttention-2的模型，在加载模型时添加`attn_implementation="flash_attention_2"`：
 
 ```python
-from transformers import Qwen2_5OmniModel
+from transformers import Qwen2_5OmniForConditionalGeneration
 
-model = Qwen2_5OmniModel.from_pretrained(
+model = Qwen2_5OmniForConditionalGeneration.from_pretrained(
     "Qwen/Qwen2.5-Omni-7B",
     device_map="auto",
     torch_dtype=torch.bfloat16,
@@ -1080,113 +1080,40 @@ Running on local: http://127.0.0.1:7860/
 
 ## 使用vLLM部署
 
-我们建议使用vLLM进行Qwen2.5-Omni的快速部署和推理，您需要从我们提供的[源码](https://github.com/fyabc/vllm/tree/qwen2_omni_public_v1)构建vLLM以获取对Qwen2.5-Omni支持，或者使用我们的[官方 docker 镜像](#-docker)。您也可以查看[vLLM官方文档](https://docs.vllm.ai/en/latest/serving/multimodal_inputs.html)以获取在线服务和离线推理的更多信息。
+我们建议使用vLLM进行Qwen2.5-Omni的快速部署和推理，您需要从我们提供的[源码](https://github.com/fyabc/vllm/tree/qwen2_omni_public)构建vLLM以获取对Qwen2.5-Omni支持，或者使用我们的[官方 docker 镜像](#-docker)。您也可以查看[vLLM官方文档](https://docs.vllm.ai/en/latest/serving/multimodal_inputs.html)以获取在线服务和离线推理的更多信息。
 
 ### 安装
 ```bash
-pip install git+https://github.com/huggingface/transformers@f742a644ca32e65758c3adb36225aef1731bd2a8
-pip install accelerate
-pip install qwen-omni-utils
-git clone -b qwen2_omni_public_v1 https://github.com/fyabc/vllm.git
+git clone -b qwen2_omni_public https://github.com/fyabc/vllm.git
 cd vllm
-git checkout d40f54fc2f1524458669048cb40a8d0286f5d1d2
-pip3 install setuptools_scm
-pip3 install -r requirements/cuda.txt
+git checkout c287be31c78e1ab184137be97dda927ecfe961c4
+pip install setuptools_scm torchdiffeq resampy x_transformers qwen-omni-utils accelerate
+pip install -r requirements/cuda.txt 
 pip install .
+pip install git+https://github.com/BakerBunker/transformers@21dbefaa54e5bf180464696aa70af0bfc7a61d53
 ```
 
 ### 本地离线推理
 
-您可以使用vLLM来本地离线推理Qwen2.5-Omni，目前我们只支持vllm的thinker部分，因此输出的模型只能是文本。我们将在不久的未来支持模型的其他部分以实现音频输出。
-
-```python
-import os
-import torch
-
-from transformers import Qwen2_5OmniProcessor
-from vllm import LLM, SamplingParams
-from qwen_omni_utils import process_mm_info
-
-# vLLM engine v1 not supported yet
-os.environ['VLLM_USE_V1'] = '0'
-
-MODEL_PATH = "Qwen/Qwen2.5-Omni-7B"
-
-llm = LLM(
-    model=MODEL_PATH, trust_remote_code=True, gpu_memory_utilization=0.9,
-    tensor_parallel_size=torch.cuda.device_count(),
-    limit_mm_per_prompt={'image': 1, 'video': 1, 'audio': 1},
-    seed=1234,
-)
-
-sampling_params = SamplingParams(
-    temperature=1e-6,
-    max_tokens=512,
-)
-
-processor = Qwen2_5OmniProcessor.from_pretrained(MODEL_PATH)
-
-messages = [
-    {
-        "role": "system",
-        "content": "You are Qwen, a virtual human developed by the Qwen Team, Alibaba Group, capable of perceiving auditory and visual inputs, as well as generating text and speech.",
-    },
-    {
-        "role": "user",
-        "content": [
-            {"type": "video", "video": "https://qianwen-res.oss-cn-beijing.aliyuncs.com/Qwen2.5-Omni/draw.mp4"},
-        ],
-    },
-]
-
-text = processor.apply_chat_template(
-    messages,
-    tokenize=False,
-    add_generation_prompt=True,
-)
-
-audios, images, videos = process_mm_info(messages, use_audio_in_video=True)
-
-inputs = {
-    'prompt': text[0],
-    'multi_modal_data': {},
-    "mm_processor_kwargs": {
-        "use_audio_in_video": True,
-    },
-}
-
-
-if images is not None:
-    inputs['multi_modal_data']['image'] = images
-if videos is not None:
-    inputs['multi_modal_data']['video'] = videos
-if audios is not None:
-    inputs['multi_modal_data']['audio'] = audios
-
-outputs = llm.generate(inputs, sampling_params=sampling_params)
-print(outputs[0].outputs[0].text)
-```
-
-我们也在我们提供的[vLLM 仓库](https://github.com/fyabc/vllm/tree/qwen2_omni_public_v1/examples/offline_inference)中提供了一些示例代码:
+您可以使用vLLM进行Qwen2.5-Omni的本地推理，我们在vLLM[源码](https://github.com/fyabc/vllm/tree/qwen2_omni_public)中提供了[示例](https://github.com/fyabc/vllm/blob/qwen2_omni_public/examples/offline_inference/qwen2_5_omni/end2end.py)，该示例可以端到端的生成音频。
 
 ```bash
-cd vllm
+# git clone -b qwen2_omni_public https://github.com/fyabc/vllm.git
+# cd vllm
+# git checkout c287be31c78e1ab184137be97dda927ecfe961c4
+# cd examples/offline_inference/qwen2_5_omni/
 
-# Audio + image + video
-python examples/offline_inference/qwen2_5_omni/only_thinker.py -q mixed_modalities
+# only text output for single GPU
+python end2end.py --model Qwen/Qwen2.5-Omni-7B --prompt audio-in-video-v2 --enforce-eager --thinker-only
 
-# Read vision and audio inputs from a single video file
-# NOTE: V1 engine not supported yet.
-VLLM_USE_V1=0 python examples/offline_inference/qwen2_5_omni/only_thinker.py -q use_audio_in_video
+# only text output for multi GPUs (example in 4 GPUs)
+python end2end.py --model Qwen/Qwen2.5-Omni-7B --prompt audio-in-video-v2 --enforce-eager --thinker-only --thinker-devices [0,1,2,3] --thinker-gpu-memory-utilization 0.9 
 
-# Process audio inputs
-python examples/offline_inference/audio_language.py --model-type qwen2_5_omni
+# audio output for single GPU
+python end2end.py --model Qwen/Qwen2.5-Omni-7B --prompt audio-in-video-v2 --enforce-eager --do-wave --voice-type Chelsie --warmup-voice-type Chelsie --output-dir output_wav
 
-# Process image inputs
-python examples/offline_inference/vision_language.py --modality image --model-type qwen2_5_omni
-
-# Process video inputs
-python examples/offline_inference/vision_language.py --modality video --model-type qwen2_5_omni
+# audio output for multi GPUs (example in 4 GPUs)
+python end2end.py --model Qwen/Qwen2.5-Omni-7B --prompt audio-in-video-v2 --enforce-eager --do-wave --voice-type Chelsie --warmup-voice-type Chelsie --thinker-devices [0,1] --talker-devices [2] --code2wav-devices [3] --thinker-gpu-memory-utilization 0.9 --talker-gpu-memory-utilization 0.9 --output-dir output_wav
 ```
 
 ## 🐳 Docker

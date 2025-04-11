@@ -10,7 +10,7 @@ import modelscope_studio.components.base as ms
 import modelscope_studio.components.antd as antd
 import gradio.processing_utils as processing_utils
 
-from transformers import Qwen2_5OmniModel, Qwen2_5OmniProcessor
+from transformers import Qwen2_5OmniForConditionalGeneration, Qwen2_5OmniProcessor
 from gradio_client import utils as client_utils
 from qwen_omni_utils import process_mm_info
 from argparse import ArgumentParser
@@ -23,12 +23,12 @@ def _load_model_processor(args):
 
     # Check if flash-attn2 flag is enabled and load model accordingly
     if args.flash_attn2:
-        model = Qwen2_5OmniModel.from_pretrained(args.checkpoint_path,
+        model = Qwen2_5OmniForConditionalGeneration.from_pretrained(args.checkpoint_path,
                                                     torch_dtype='auto',
                                                     attn_implementation='flash_attention_2',
                                                     device_map=device_map)
     else:
-        model = Qwen2_5OmniModel.from_pretrained(args.checkpoint_path, device_map=device_map, torch_dtype='auto')
+        model = Qwen2_5OmniForConditionalGeneration.from_pretrained(args.checkpoint_path, device_map=device_map, torch_dtype='auto')
 
     processor = Qwen2_5OmniProcessor.from_pretrained(args.checkpoint_path)
     return model, processor
@@ -109,10 +109,10 @@ def _launch_demo(args, model, processor):
 
         audios, images, videos = process_mm_info(messages, use_audio_in_video=True)
 
-        inputs = processor(text=text, audios=audios, images=images, videos=videos, return_tensors="pt", padding=True, use_audio_in_video=True)
+        inputs = processor(text=text, audio=audios, images=images, videos=videos, return_tensors="pt", padding=True, use_audio_in_video=True)
         inputs = inputs.to(model.device).to(model.dtype)
 
-        text_ids, audio = model.generate(**inputs, spk=voice, use_audio_in_video=True)
+        text_ids, audio = model.generate(**inputs, speaker=voice, use_audio_in_video=True)
 
         response = processor.batch_decode(text_ids, skip_special_tokens=True, clean_up_tokenization_spaces=False)
         response = response[0].split("\n")[-1]

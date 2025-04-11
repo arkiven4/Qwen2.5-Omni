@@ -13,7 +13,7 @@ pip install qwen-omni-utils
 ### Qwen2Omni
 
 ```python
-from transformers import Qwen2_5OmniModel, AutoProcessor
+from transformers import Qwen2_5OmniForConditionalGeneration, AutoProcessor
 from qwen_omni_utils import process_mm_info
 
 
@@ -47,10 +47,10 @@ messages = [
 ]
 
 processor = AutoProcessor.from_pretrained(model_path)
-model = Qwen2_5OmniModel.from_pretrained(model_path, torch_dtype="auto", device_map="auto")
+model = Qwen2_5OmniForConditionalGeneration.from_pretrained(model_path, torch_dtype="auto", device_map="auto")
 text = processor.apply_chat_template(messages, tokenize=False, add_generation_prompt=True)
 audios, images, videos = process_mm_info(messages)
-inputs = processor(text=text, images=images, videos=videos, audios=audios, padding=True, return_tensors="pt")
+inputs = processor(text=text, images=images, videos=videos, audio=audios, padding=True, return_tensors="pt")
 print(inputs)
 generated_ids, generate_wav = model.generate(**inputs)
 print(generated_ids)

@@ -23,6 +23,7 @@ We release **Qwen2.5-Omni**, the new flagship end-to-end multimodal model in the
 
 
 ## News
+* 2025.04.11: We release the new vllm version which support audio ouput now! Please experience it from source or our docker image.
 * 2025.04.02: ⭐️⭐️⭐️ Qwen2.5-Omni reaches top-1 on Hugging Face Trending! 
 * 2025.03.29: ⭐️⭐️⭐️ Qwen2.5-Omni reaches top-2 on Hugging Face Trending! 
 * 2025.03.26: Real-time interaction with Qwen2.5-Omni is available on [Qwen Chat](https://chat.qwen.ai/). Let's start this amazing journey now!
@@ -51,7 +52,7 @@ We release **Qwen2.5-Omni**, the new flagship end-to-end multimodal model in the
 - [Docker](#-docker)
 <!-- - [Citation](#citation) -->
 
-## OverView 
+## Overview 
 ### Introduction
 Qwen2.5-Omni is an end-to-end multimodal model designed to perceive diverse modalities, including text, images, audio, and video, while simultaneously generating text and natural speech responses in a streaming manner. 
 
@@ -637,7 +638,7 @@ Below, we provide simple examples to show how to use Qwen2.5-Omni with 🤖 Mode
 The codes of Qwen2.5-Omni on Hugging Face Transformers are in pull request stage and not merged into the main branch yet. Therefore, you may need to build from source to use it with command:
 ```
 pip uninstall transformers
-pip install git+https://github.com/huggingface/transformers@f742a644ca32e65758c3adb36225aef1731bd2a8
+pip install git+https://github.com/BakerBunker/transformers@21dbefaa54e5bf180464696aa70af0bfc7a61d53
 pip install accelerate
 ```
 or you might encounter the following error:
@@ -650,10 +651,10 @@ We offer a toolkit to help you handle various types of audio and visual input mo
 
 ```bash
 # It's highly recommended to use `[decord]` feature for faster video loading.
-pip install qwen-omni-utils[decord]
+pip install qwen-omni-utils[decord] -U
 ```
 
-If you are not using Linux, you might not be able to install `decord` from PyPI. In that case, you can use `pip install qwen-omni-utils` which will fall back to using torchvision for video processing. However, you can still [install decord from source](https://github.com/dmlc/decord?tab=readme-ov-file#install-from-source) to get decord used when loading video.
+If you are not using Linux, you might not be able to install `decord` from PyPI. In that case, you can use `pip install qwen-omni-utils -U` which will fall back to using torchvision for video processing. However, you can still [install decord from source](https://github.com/dmlc/decord?tab=readme-ov-file#install-from-source) to get decord used when loading video.
 
 We are preparing [cookbooks](https://github.com/QwenLM/Qwen2.5-Omni/tree/main/cookbooks) for many capabilities, including audio understanding, voice chatting, screen recording interaction, video information extracting, omni chatting and more. Welcome to learn more!
 
@@ -664,14 +665,14 @@ Here we show a code snippet to show you how to use the chat model with `transfor
 ```python
 import soundfile as sf
 
-from transformers import Qwen2_5OmniModel, Qwen2_5OmniProcessor
+from transformers import Qwen2_5OmniForConditionalGeneration, Qwen2_5OmniProcessor
 from qwen_omni_utils import process_mm_info
 
 # default: Load the model on the available device(s)
-model = Qwen2_5OmniModel.from_pretrained("Qwen/Qwen2.5-Omni-7B", torch_dtype="auto", device_map="auto")
+model = Qwen2_5OmniForConditionalGeneration.from_pretrained("Qwen/Qwen2.5-Omni-7B", torch_dtype="auto", device_map="auto")
 
 # We recommend enabling flash_attention_2 for better acceleration and memory saving.
-# model = Qwen2_5OmniModel.from_pretrained(
+# model = Qwen2_5OmniForConditionalGeneration.from_pretrained(
 #     "Qwen/Qwen2.5-Omni-7B",
 #     torch_dtype="auto",
 #     device_map="auto",
@@ -699,7 +700,7 @@ USE_AUDIO_IN_VIDEO = True
 # Preparation for inference
 text = processor.apply_chat_template(conversation, add_generation_prompt=True, tokenize=False)
 audios, images, videos = process_mm_info(conversation, use_audio_in_video=USE_AUDIO_IN_VIDEO)
-inputs = processor(text=text, audios=audios, images=images, videos=videos, return_tensors="pt", padding=True, use_audio_in_video=USE_AUDIO_IN_VIDEO)
+inputs = processor(text=text, audio=audios, images=images, videos=videos, return_tensors="pt", padding=True, use_audio_in_video=USE_AUDIO_IN_VIDEO)
 inputs = inputs.to(model.device).to(model.dtype)
 
 # Inference: Generation of the output text and audio
@@ -813,7 +814,7 @@ USE_AUDIO_IN_VIDEO = True
 text = processor.apply_chat_template(conversations, add_generation_prompt=True, tokenize=False)
 audios, images, videos = process_mm_info(conversations, use_audio_in_video=USE_AUDIO_IN_VIDEO)
 
-inputs = processor(text=text, audios=audios, images=images, videos=videos, return_tensors="pt", padding=True, use_audio_in_video=USE_AUDIO_IN_VIDEO)
+inputs = processor(text=text, audio=audios, images=images, videos=videos, return_tensors="pt", padding=True, use_audio_in_video=USE_AUDIO_IN_VIDEO)
 inputs = inputs.to(model.device).to(model.dtype)
 
 # Batch Inference
@@ -838,6 +839,7 @@ If users need audio output, the system prompt must be set as "You are Qwen, a vi
     "content": "You are Qwen, a virtual human developed by the Qwen Team, Alibaba Group, capable of perceiving auditory and visual inputs, as well as generating text and speech.",
 }
 ```
+
 #### Use audio in video
 In the process of multimodal interaction, the videos provided by users are often accompanied by audio (such as questions about the content in the video, or sounds generated by certain events in the video). This information is conducive to the model providing a better interactive experience. So we provide the following options for users to decide whether to use audio in video.
 ```python
@@ -846,7 +848,7 @@ audios, images, videos = process_mm_info(conversations, use_audio_in_video=True)
 ```
 ```python
 # second place, in model processor
-inputs = processor(text=text, audios=audios, images=images, videos=videos, return_tensors="pt", 
+inputs = processor(text=text, audio=audios, images=images, videos=videos, return_tensors="pt", 
                    padding=True, use_audio_in_video=True)
 ```
 ```python
@@ -857,24 +859,23 @@ It is worth noting that during a multi-round conversation, the `use_audio_in_vid
 
 #### Use audio output or not
 
-The model supports both text and audio outputs, if users do not need audio outputs, they can set `enable_audio_output=False` in the `from_pretrained` function. This option will save about `~2GB` of GPU memory but the `return_audio` option for `generate` function will only allow to be set at `False`.
+The model supports both text and audio outputs, if users do not need audio outputs, they can call `model.disable_talker()` after init the model. This option will save about `2GB` of GPU memory but the `return_audio` option for `generate` function will only allow to be set at `False`.
 ```python
-model = Qwen2_5OmniModel.from_pretrained(
+model = Qwen2_5OmniForConditionalGeneration.from_pretrained(
     "Qwen/Qwen2.5-Omni-7B",
     torch_dtype="auto",
-    device_map="auto",
-    enable_audio_output=False,
+    device_map="auto"
 )
+model.disable_talker()
 ```
 
-In order to obtain a flexible experience, we recommend that users set `enable_audio_output` at `True` when initializing the model through `from_pretrained` function, and then decide whether to return audio when `generate` function is called. When `return_audio` is set to `False`, the model will only return text outputs to get text responses faster.
+In order to obtain a flexible experience, we recommend that users can decide whether to return audio when `generate` function is called. If `return_audio` is set to `False`, the model will only return text outputs to get text responses faster.
 
 ```python
-model = Qwen2_5OmniModel.from_pretrained(
+model = Qwen2_5OmniForConditionalGeneration.from_pretrained(
     "Qwen/Qwen2.5-Omni-7B",
     torch_dtype="auto",
-    device_map="auto",
-    enable_audio_output=True,
+    device_map="auto"
 )
 ...
 text_ids = model.generate(**inputs, return_audio=False)
@@ -888,14 +889,14 @@ Qwen2.5-Omni supports the ability to change the voice of the output audio. The `
 | Chelsie    | Female | A honeyed, velvety voice that carries a gentle warmth and luminous clarity.|
 | Ethan      | Male   | A bright, upbeat voice with infectious energy and a warm, approachable vibe.|
 
-Users can use the `spk` parameter of `generate` function to specify the voice type. By defalut, if `spk` is not specified, the default voice type is `Chelsie`.
+Users can use the `speaker` parameter of `generate` function to specify the voice type. By defalut, if `speaker` is not specified, the default voice type is `Chelsie`.
 
 ```python
-text_ids, audio = model.generate(**inputs, spk="Chelsie")
+text_ids, audio = model.generate(**inputs, speaker="Chelsie")
 ```
 
 ```python
-text_ids, audio = model.generate(**inputs, spk="Ethan")
+text_ids, audio = model.generate(**inputs, speaker="Ethan")
 ```
 
 #### Flash-Attention 2 to speed up generation
@@ -911,9 +912,9 @@ Also, you should have hardware that is compatible with FlashAttention 2. Read mo
 To load and run a model using FlashAttention-2, add `attn_implementation="flash_attention_2"` when loading the model:
 
 ```python
-from transformers import Qwen2_5OmniModel
+from transformers import Qwen2_5OmniForConditionalGeneration
 
-model = Qwen2_5OmniModel.from_pretrained(
+model = Qwen2_5OmniForConditionalGeneration.from_pretrained(
     "Qwen/Qwen2.5-Omni-7B",
     device_map="auto",
     torch_dtype=torch.bfloat16,
@@ -1000,7 +1001,6 @@ wav_bytes = base64.b64decode(audio_string)
 wav_array = np.frombuffer(wav_bytes, dtype=np.int16)
 sf.write("output.wav", wav_array, samplerate=24000)
 ```
-
 ### Customization Settings
 
 Since Qwen2.5-Omni does not support prompt settings when using [audio output](#prompt-for-audio-output) (including local deployment and API inference), we suggest that if you need to control the output of the model or modify the personality settings of the model, you can try adding similar content to the conversation template as follows:
@@ -1080,113 +1080,40 @@ The streaming Real-time interaction with Qwen2.5-Omni is available now, please v
 
 ## Deployment with vLLM
 
-We recommend using vLLM for fast Qwen2.5-Omni deployment and inference. You need to install from our provided [source](https://github.com/fyabc/vllm/tree/qwen2_omni_public_v1) to get vLLM support for Qwen2.5-Omni or use our [official docker image](#-docker). You can also check [vLLM official documentation](https://docs.vllm.ai/en/latest/serving/multimodal_inputs.html) for more details about online serving and offline inference.
+We recommend using vLLM for fast Qwen2.5-Omni deployment and inference. You need to install from our provided [source](https://github.com/fyabc/vllm/tree/qwen2_omni_public) to get vLLM support for Qwen2.5-Omni or use our [official docker image](#-docker). You can also check [vLLM official documentation](https://docs.vllm.ai/en/latest/serving/multimodal_inputs.html) for more details about online serving and offline inference.
 
 ### Installation
 ```bash
-pip install git+https://github.com/huggingface/transformers@f742a644ca32e65758c3adb36225aef1731bd2a8
-pip install accelerate
-pip install qwen-omni-utils
-git clone -b qwen2_omni_public_v1 https://github.com/fyabc/vllm.git
+git clone -b qwen2_omni_public https://github.com/fyabc/vllm.git
 cd vllm
-git checkout d40f54fc2f1524458669048cb40a8d0286f5d1d2
-pip3 install setuptools_scm
-pip3 install -r requirements/cuda.txt
+git checkout c287be31c78e1ab184137be97dda927ecfe961c4
+pip install setuptools_scm torchdiffeq resampy x_transformers qwen-omni-utils accelerate
+pip install -r requirements/cuda.txt 
 pip install .
+pip install git+https://github.com/BakerBunker/transformers@21dbefaa54e5bf180464696aa70af0bfc7a61d53
 ```
 
 ### Inference Locally
 
-You can use vLLM to inference Qwen2.5-Omni locally, and currently we only supports the thinker part in vllm, so the output of model can only be text. We will support other parts of the model in the near future to achieve audio output.
-
-```python
-import os
-import torch
-
-from transformers import Qwen2_5OmniProcessor
-from vllm import LLM, SamplingParams
-from qwen_omni_utils import process_mm_info
-
-# vLLM engine v1 not supported yet
-os.environ['VLLM_USE_V1'] = '0'
-
-MODEL_PATH = "Qwen/Qwen2.5-Omni-7B"
-
-llm = LLM(
-    model=MODEL_PATH, trust_remote_code=True, gpu_memory_utilization=0.9,
-    tensor_parallel_size=torch.cuda.device_count(),
-    limit_mm_per_prompt={'image': 1, 'video': 1, 'audio': 1},
-    seed=1234,
-)
-
-sampling_params = SamplingParams(
-    temperature=1e-6,
-    max_tokens=512,
-)
-
-processor = Qwen2_5OmniProcessor.from_pretrained(MODEL_PATH)
-
-messages = [
-    {
-        "role": "system",
-        "content": "You are Qwen, a virtual human developed by the Qwen Team, Alibaba Group, capable of perceiving auditory and visual inputs, as well as generating text and speech.",
-    },
-    {
-        "role": "user",
-        "content": [
-            {"type": "video", "video": "https://qianwen-res.oss-cn-beijing.aliyuncs.com/Qwen2.5-Omni/draw.mp4"},
-        ],
-    },
-]
-
-text = processor.apply_chat_template(
-    messages,
-    tokenize=False,
-    add_generation_prompt=True,
-)
-
-audios, images, videos = process_mm_info(messages, use_audio_in_video=True)
-
-inputs = {
-    'prompt': text[0],
-    'multi_modal_data': {},
-    "mm_processor_kwargs": {
-        "use_audio_in_video": True,
-    },
-}
-
-
-if images is not None:
-    inputs['multi_modal_data']['image'] = images
-if videos is not None:
-    inputs['multi_modal_data']['video'] = videos
-if audios is not None:
-    inputs['multi_modal_data']['audio'] = audios
-
-outputs = llm.generate(inputs, sampling_params=sampling_params)
-print(outputs[0].outputs[0].text)
-```
-
-We also provide some examples in [vLLM repo](https://github.com/fyabc/vllm/tree/qwen2_omni_public_v1/examples/offline_inference):
+You can use vLLM to inference Qwen2.5-Omni locally, we provide example in [vLLM repo](https://github.com/fyabc/vllm/blob/qwen2_omni_public/examples/offline_inference/qwen2_5_omni/end2end.py) which can generate audio output:
 
 ```bash
-cd vllm
+# git clone -b qwen2_omni_public https://github.com/fyabc/vllm.git
+# cd vllm
+# git checkout c287be31c78e1ab184137be97dda927ecfe961c4
+# cd examples/offline_inference/qwen2_5_omni/
 
-# Audio + image + video
-python examples/offline_inference/qwen2_5_omni/only_thinker.py -q mixed_modalities
+# only text output for single GPU
+python end2end.py --model Qwen/Qwen2.5-Omni-7B --prompt audio-in-video-v2 --enforce-eager --thinker-only
 
-# Read vision and audio inputs from a single video file
-# NOTE: V1 engine not supported yet.
-VLLM_USE_V1=0 python examples/offline_inference/qwen2_5_omni/only_thinker.py -q use_audio_in_video
+# only text output for multi GPUs (example in 4 GPUs)
+python end2end.py --model Qwen/Qwen2.5-Omni-7B --prompt audio-in-video-v2 --enforce-eager --thinker-only --thinker-devices [0,1,2,3] --thinker-gpu-memory-utilization 0.9 
 
-# Process audio inputs
-python examples/offline_inference/audio_language.py --model-type qwen2_5_omni
+# audio output for single GPU
+python end2end.py --model Qwen/Qwen2.5-Omni-7B --prompt audio-in-video-v2 --enforce-eager --do-wave --voice-type Chelsie --warmup-voice-type Chelsie --output-dir output_wav
 
-# Process image inputs
-python examples/offline_inference/vision_language.py --modality image --model-type qwen2_5_omni
-
-# Process video inputs
-python examples/offline_inference/vision_language.py --modality video --model-type qwen2_5_omni
+# audio output for multi GPUs (example in 4 GPUs)
+python end2end.py --model Qwen/Qwen2.5-Omni-7B --prompt audio-in-video-v2 --enforce-eager --do-wave --voice-type Chelsie --warmup-voice-type Chelsie --thinker-devices [0,1] --talker-devices [2] --code2wav-devices [3] --thinker-gpu-memory-utilization 0.9 --talker-gpu-memory-utilization 0.9 --output-dir output_wav
 ```
 
 ## 🐳 Docker
