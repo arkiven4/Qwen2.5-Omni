@@ -1086,7 +1086,7 @@ Running on local: http://127.0.0.1:7860/
 ```bash
 git clone -b qwen2_omni_public https://github.com/fyabc/vllm.git
 cd vllm
-git checkout c287be31c78e1ab184137be97dda927ecfe961c4
+git checkout 729feed3ec2beefe63fda30a345ef363d08062f8
 pip install setuptools_scm torchdiffeq resampy x_transformers qwen-omni-utils accelerate
 pip install -r requirements/cuda.txt 
 pip install .
@@ -1100,7 +1100,7 @@ pip install git+https://github.com/BakerBunker/transformers@21dbefaa54e5bf180464
 ```bash
 # git clone -b qwen2_omni_public https://github.com/fyabc/vllm.git
 # cd vllm
-# git checkout c287be31c78e1ab184137be97dda927ecfe961c4
+# git checkout 729feed3ec2beefe63fda30a345ef363d08062f8
 # cd examples/offline_inference/qwen2_5_omni/
 
 # only text output for single GPU
@@ -1114,6 +1114,29 @@ python end2end.py --model Qwen/Qwen2.5-Omni-7B --prompt audio-in-video-v2 --enfo
 
 # audio output for multi GPUs (example in 4 GPUs)
 python end2end.py --model Qwen/Qwen2.5-Omni-7B --prompt audio-in-video-v2 --enforce-eager --do-wave --voice-type Chelsie --warmup-voice-type Chelsie --thinker-devices [0,1] --talker-devices [2] --code2wav-devices [3] --thinker-gpu-memory-utilization 0.9 --talker-gpu-memory-utilization 0.9 --output-dir output_wav
+```
+
+除了上述的示例之外，您可以通过以下命令通过vLLM来启动API服务，目前vLLM serve仅支持文本输出。
+```bash
+# for single GPU
+VLLM_USE_V1=0 vllm serve /path/to/Qwen2.5-Omni-7B/ --port 8000 --host 127.0.0.1 --dtype bfloat16
+# for multi GPUs (example in 4 GPUs)
+VLLM_USE_V1=0 vllm serve /path/to/Qwen2.5-Omni-7B/ --port 8000 --host 127.0.0.1 --dtype bfloat16 -tp 4
+```
+然后您可以通过如下代码使用这个API(示例里是使用curl命令):
+```bash
+curl http://localhost:8000/v1/chat/completions \
+    -H "Content-Type: application/json" \
+    -d '{
+    "messages": [
+    {"role": "system", "content": "You are a helpful assistant."},
+    {"role": "user", "content": [
+        {"type": "image_url", "image_url": {"url": "https://modelscope.oss-cn-beijing.aliyuncs.com/resource/qwen.png"}},
+        {"type": "audio_url", "audio_url": {"url": "https://qianwen-res.oss-cn-beijing.aliyuncs.com/Qwen2.5-Omni/cough.wav"}},
+        {"type": "text", "text": "What is the text in the illustrate ans what it the sound in the audio?"}
+    ]}
+    ]
+    }'
 ```
 
 ## 🐳 Docker

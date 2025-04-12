@@ -927,13 +927,13 @@ model = Qwen2_5OmniForConditionalGeneration.from_pretrained(
 
 | Cookbook | Description | Open |
 | -------- | ----------- | ---- |
-| [Universal Audio Understanding](https://github.com/QwenLM/Qwen2.5-Omni/blob/main/cookbooks/universal_audio_understanding.ipynb) | Speech recongnition, speech-to-text translation and audio analysis. | [![Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/QwenLM/Qwen2.5-Omni/blob/main/cookbooks/universal_audio_understanding.ipynb) |
-| [Voice Chatting](https://github.com/QwenLM/Qwen2.5-Omni/blob/main/cookbooks/voice_chatting.ipynb) | Chatting with Qwen2.5-Omni by voice input and output. | [![Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/QwenLM/Qwen2.5-Omni/blob/main/cookbooks/voice_chatting.ipynb) |
-| [Screen Recording Interaction](https://github.com/QwenLM/Qwen2.5-Omni/blob/main/cookbooks/screen_recording_interaction.ipynb) | Get the information and content you want to know by asking questions in real time on the recording screen. | [![Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/QwenLM/Qwen2.5-Omni/blob/main/cookbooks/screen_recording_interaction.ipynb) |
-| [Video Information Extracting](https://github.com/QwenLM/Qwen2.5-Omni/blob/main/cookbooks/video_information_extracting.ipynb) | Obtaining information from the video stream. | [![Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/QwenLM/Qwen2.5-Omni/blob/main/cookbooks/video_information_extracting.ipynb) |
-| [Omni Chatting for Music](https://github.com/QwenLM/Qwen2.5-Omni/blob/main/cookbooks/omni_chatting_for_music.ipynb) | Chat with Qwen2.5-Omni about music content in a audio and video stream. | [![Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/QwenLM/Qwen2.5-Omni/blob/main/cookbooks/omni_chatting_for_music.ipynb) |
-| [Omni Chatting for Math](https://github.com/QwenLM/Qwen2.5-Omni/blob/main/cookbooks/omni_chatting_for_math.ipynb) | Chat with Qwen2.5-Omni about math content in a audio and video stream. | [![Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/QwenLM/Qwen2.5-Omni/blob/main/cookbooks/omni_chatting_for_math.ipynb) |
-| [Multi Round Omni Chatting](https://github.com/QwenLM/Qwen2.5-Omni/blob/main/cookbooks/multi_round_omni_chatting.ipynb) | Conducted multiple rounds of audio and video dialogues with Qwen2.5-Omni to provide the most comprehensive ability demonstration. | [![Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/QwenLM/Qwen2.5-Omni/blob/main/cookbooks/multi_round_omni_chatting.ipynb) |
+| [Universal Audio Understanding](https://github.com/QwenLM/Qwen2.5-Omni/blob/main/cookbooks/universal_audio_understanding.ipynb) | Speech recongnition, speech-to-text translation and audio analysis. | [![Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://github.com/QwenLM/Qwen2.5-Omni/blob/main/cookbooks/universal_audio_understanding.ipynb) |
+| [Voice Chatting](https://github.com/QwenLM/Qwen2.5-Omni/blob/main/cookbooks/voice_chatting.ipynb) | Chatting with Qwen2.5-Omni by voice input and output. | [![Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://github.com/QwenLM/Qwen2.5-Omni/blob/main/cookbooks/voice_chatting.ipynb) |
+| [Screen Recording Interaction](https://github.com/QwenLM/Qwen2.5-Omni/blob/main/cookbooks/screen_recording_interaction.ipynb) | Get the information and content you want to know by asking questions in real time on the recording screen. | [![Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://github.com/QwenLM/Qwen2.5-Omni/blob/main/cookbooks/screen_recording_interaction.ipynb) |
+| [Video Information Extracting](https://github.com/QwenLM/Qwen2.5-Omni/blob/main/cookbooks/video_information_extracting.ipynb) | Obtaining information from the video stream. | [![Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://github.com/QwenLM/Qwen2.5-Omni/blob/main/cookbooks/video_information_extracting.ipynb) |
+| [Omni Chatting for Music](https://github.com/QwenLM/Qwen2.5-Omni/blob/main/cookbooks/omni_chatting_for_music.ipynb) | Chat with Qwen2.5-Omni about music content in a audio and video stream. | [![Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://github.com/QwenLM/Qwen2.5-Omni/blob/main/cookbooks/omni_chatting_for_music.ipynb) |
+| [Omni Chatting for Math](https://github.com/QwenLM/Qwen2.5-Omni/blob/main/cookbooks/omni_chatting_for_math.ipynb) | Chat with Qwen2.5-Omni about math content in a audio and video stream. | [![Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://github.com/QwenLM/Qwen2.5-Omni/blob/main/cookbooks/omni_chatting_for_math.ipynb) |
+| [Multi Round Omni Chatting](https://github.com/QwenLM/Qwen2.5-Omni/blob/main/cookbooks/multi_round_omni_chatting.ipynb) | Conducted multiple rounds of audio and video dialogues with Qwen2.5-Omni to provide the most comprehensive ability demonstration. | [![Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://github.com/QwenLM/Qwen2.5-Omni/blob/main/cookbooks/multi_round_omni_chatting.ipynb) |
 
 ### API Inference
 
@@ -1086,21 +1086,21 @@ We recommend using vLLM for fast Qwen2.5-Omni deployment and inference. You need
 ```bash
 git clone -b qwen2_omni_public https://github.com/fyabc/vllm.git
 cd vllm
-git checkout c287be31c78e1ab184137be97dda927ecfe961c4
+git checkout 729feed3ec2beefe63fda30a345ef363d08062f8
 pip install setuptools_scm torchdiffeq resampy x_transformers qwen-omni-utils accelerate
 pip install -r requirements/cuda.txt 
 pip install .
 pip install git+https://github.com/BakerBunker/transformers@21dbefaa54e5bf180464696aa70af0bfc7a61d53
 ```
 
-### Inference Locally
+### Inference
 
 You can use vLLM to inference Qwen2.5-Omni locally, we provide example in [vLLM repo](https://github.com/fyabc/vllm/blob/qwen2_omni_public/examples/offline_inference/qwen2_5_omni/end2end.py) which can generate audio output:
 
 ```bash
 # git clone -b qwen2_omni_public https://github.com/fyabc/vllm.git
 # cd vllm
-# git checkout c287be31c78e1ab184137be97dda927ecfe961c4
+# git checkout 729feed3ec2beefe63fda30a345ef363d08062f8
 # cd examples/offline_inference/qwen2_5_omni/
 
 # only text output for single GPU
@@ -1114,6 +1114,29 @@ python end2end.py --model Qwen/Qwen2.5-Omni-7B --prompt audio-in-video-v2 --enfo
 
 # audio output for multi GPUs (example in 4 GPUs)
 python end2end.py --model Qwen/Qwen2.5-Omni-7B --prompt audio-in-video-v2 --enforce-eager --do-wave --voice-type Chelsie --warmup-voice-type Chelsie --thinker-devices [0,1] --talker-devices [2] --code2wav-devices [3] --thinker-gpu-memory-utilization 0.9 --talker-gpu-memory-utilization 0.9 --output-dir output_wav
+```
+
+Besides the above examples, you can also use vLLM serve through the following command, and vLLM serve for Qwen2.5-Omni only supports thinker now, meaning only text output is supported.
+```bash
+# for single GPU
+VLLM_USE_V1=0 vllm serve /path/to/Qwen2.5-Omni-7B/ --port 8000 --host 127.0.0.1 --dtype bfloat16
+# for multi GPUs (example in 4 GPUs)
+VLLM_USE_V1=0 vllm serve /path/to/Qwen2.5-Omni-7B/ --port 8000 --host 127.0.0.1 --dtype bfloat16 -tp 4
+```
+Then you can use the chat API as below (via curl for example):
+```bash
+curl http://localhost:8000/v1/chat/completions \
+    -H "Content-Type: application/json" \
+    -d '{
+    "messages": [
+    {"role": "system", "content": "You are a helpful assistant."},
+    {"role": "user", "content": [
+        {"type": "image_url", "image_url": {"url": "https://modelscope.oss-cn-beijing.aliyuncs.com/resource/qwen.png"}},
+        {"type": "audio_url", "audio_url": {"url": "https://qianwen-res.oss-cn-beijing.aliyuncs.com/Qwen2.5-Omni/cough.wav"}},
+        {"type": "text", "text": "What is the text in the illustrate ans what it the sound in the audio?"}
+    ]}
+    ]
+    }'
 ```
 
 ## 🐳 Docker
