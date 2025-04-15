@@ -635,10 +635,10 @@ We conducted a comprehensive evaluation of Qwen2.5-Omni, which demonstrates stro
 
 Below, we provide simple examples to show how to use Qwen2.5-Omni with 🤖 ModelScope and 🤗 Transformers.
 
-The codes of Qwen2.5-Omni on Hugging Face Transformers are in pull request stage and not merged into the main branch yet. Therefore, you may need to build from source to use it with command:
+The codes of Qwen2.5-Omni has been in the latest Hugging face transformers and we advise you to build from source with command:
 ```
 pip uninstall transformers
-pip install git+https://github.com/BakerBunker/transformers@21dbefaa54e5bf180464696aa70af0bfc7a61d53
+pip install git+https://github.com/huggingface/transformers
 pip install accelerate
 ```
 or you might encounter the following error:
@@ -684,7 +684,9 @@ processor = Qwen2_5OmniProcessor.from_pretrained("Qwen/Qwen2.5-Omni-7B")
 conversation = [
     {
         "role": "system",
-        "content": "You are Qwen, a virtual human developed by the Qwen Team, Alibaba Group, capable of perceiving auditory and visual inputs, as well as generating text and speech.",
+        "content": [
+            {"type": "text", "text": "You are Qwen, a virtual human developed by the Qwen Team, Alibaba Group, capable of perceiving auditory and visual inputs, as well as generating text and speech."}
+        ],
     },
     {
         "role": "user",
@@ -750,7 +752,9 @@ The model can batch inputs composed of mixed samples of various types such as te
 conversation1 = [
     {
         "role": "system",
-        "content": "You are Qwen, a virtual human developed by the Qwen Team, Alibaba Group, capable of perceiving auditory and visual inputs, as well as generating text and speech.",
+        "content": [
+            {"type": "text", "text": "You are Qwen, a virtual human developed by the Qwen Team, Alibaba Group, capable of perceiving auditory and visual inputs, as well as generating text and speech."}
+        ],
     },
     {
         "role": "user",
@@ -764,7 +768,9 @@ conversation1 = [
 conversation2 = [
     {
         "role": "system",
-        "content": "You are Qwen, a virtual human developed by the Qwen Team, Alibaba Group, capable of perceiving auditory and visual inputs, as well as generating text and speech.",
+        "content": [
+            {"type": "text", "text": "You are Qwen, a virtual human developed by the Qwen Team, Alibaba Group, capable of perceiving auditory and visual inputs, as well as generating text and speech."}
+        ],
     },
     {
         "role": "user",
@@ -778,7 +784,9 @@ conversation2 = [
 conversation3 = [
     {
         "role": "system",
-        "content": "You are Qwen, a virtual human developed by the Qwen Team, Alibaba Group, capable of perceiving auditory and visual inputs, as well as generating text and speech.",
+        "content": [
+            {"type": "text", "text": "You are Qwen, a virtual human developed by the Qwen Team, Alibaba Group, capable of perceiving auditory and visual inputs, as well as generating text and speech."}
+        ],
     },
     {
         "role": "user",
@@ -791,7 +799,9 @@ conversation3 = [
 conversation4 = [
     {
         "role": "system",
-        "content": "You are Qwen, a virtual human developed by the Qwen Team, Alibaba Group, capable of perceiving auditory and visual inputs, as well as generating text and speech.",
+        "content": [
+            {"type": "text", "text": "You are Qwen, a virtual human developed by the Qwen Team, Alibaba Group, capable of perceiving auditory and visual inputs, as well as generating text and speech."}
+        ],
     },
     {
         "role": "user",
@@ -836,7 +846,9 @@ If users need audio output, the system prompt must be set as "You are Qwen, a vi
 ```
 {
     "role": "system",
-    "content": "You are Qwen, a virtual human developed by the Qwen Team, Alibaba Group, capable of perceiving auditory and visual inputs, as well as generating text and speech.",
+    "content": [
+          {"type": "text", "text": "You are Qwen, a virtual human developed by the Qwen Team, Alibaba Group, capable of perceiving auditory and visual inputs, as well as generating text and speech."}
+    ]
 }
 ```
 
@@ -1090,7 +1102,7 @@ git checkout 729feed3ec2beefe63fda30a345ef363d08062f8
 pip install setuptools_scm torchdiffeq resampy x_transformers qwen-omni-utils accelerate
 pip install -r requirements/cuda.txt 
 pip install .
-pip install git+https://github.com/BakerBunker/transformers@21dbefaa54e5bf180464696aa70af0bfc7a61d53
+pip install git+https://github.com/huggingface/transformers
 ```
 
 ### Inference

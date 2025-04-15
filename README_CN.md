@@ -632,10 +632,10 @@ Qwen2.5-Omni在包括图像，音频，音视频等各种模态下的表现都�
 
 ## 快速开始
 
-接下来，我们将提供如何在🤖 ModelScope和🤗 Transformers上使用 Qwen2.5-Omni. 由于Qwen2.5-Omni的代码在Hugging Face transformers中目前处于未合并阶段，尚未并入主分支，我们建议您从源代码构建：
+接下来，我们将提供如何在🤖 ModelScope和🤗 Transformers上使用 Qwen2.5-Omni. Qwen2.5-Omni的代码在Hugging Face transformers的最新版本中，我们建议您从源代码构建：
 ```
 pip uninstall transformers
-pip install git+https://github.com/BakerBunker/transformers@21dbefaa54e5bf180464696aa70af0bfc7a61d53
+pip install git+https://github.com/huggingface/transformers
 pip install accelerate
 ```
 否则您可能会遇到以下错误：
@@ -681,7 +681,9 @@ processor = Qwen2_5OmniProcessor.from_pretrained("Qwen/Qwen2.5-Omni-7B")
 conversation = [
     {
         "role": "system",
-        "content": "You are Qwen, a virtual human developed by the Qwen Team, Alibaba Group, capable of perceiving auditory and visual inputs, as well as generating text and speech.",
+        "content": [
+            {"type": "text", "text": "You are Qwen, a virtual human developed by the Qwen Team, Alibaba Group, capable of perceiving auditory and visual inputs, as well as generating text and speech."}
+        ],
     },
     {
         "role": "user",
@@ -747,7 +749,9 @@ sf.write(
 conversation1 = [
     {
         "role": "system",
-        "content": "You are Qwen, a virtual human developed by the Qwen Team, Alibaba Group, capable of perceiving auditory and visual inputs, as well as generating text and speech.",
+        "content": [
+            {"type": "text", "text": "You are Qwen, a virtual human developed by the Qwen Team, Alibaba Group, capable of perceiving auditory and visual inputs, as well as generating text and speech."}
+        ],
     },
     {
         "role": "user",
@@ -761,7 +765,9 @@ conversation1 = [
 conversation2 = [
     {
         "role": "system",
-        "content": "You are Qwen, a virtual human developed by the Qwen Team, Alibaba Group, capable of perceiving auditory and visual inputs, as well as generating text and speech.",
+        "content": [
+            {"type": "text", "text": "You are Qwen, a virtual human developed by the Qwen Team, Alibaba Group, capable of perceiving auditory and visual inputs, as well as generating text and speech."}
+        ],
     },
     {
         "role": "user",
@@ -775,7 +781,9 @@ conversation2 = [
 conversation3 = [
     {
         "role": "system",
-        "content": "You are Qwen, a virtual human developed by the Qwen Team, Alibaba Group, capable of perceiving auditory and visual inputs, as well as generating text and speech.",
+        "content": [
+            {"type": "text", "text": "You are Qwen, a virtual human developed by the Qwen Team, Alibaba Group, capable of perceiving auditory and visual inputs, as well as generating text and speech."}
+        ],
     },
     {
         "role": "user",
@@ -788,7 +796,9 @@ conversation3 = [
 conversation4 = [
     {
         "role": "system",
-        "content": "You are Qwen, a virtual human developed by the Qwen Team, Alibaba Group, capable of perceiving auditory and visual inputs, as well as generating text and speech.",
+        "content": [
+            {"type": "text", "text": "You are Qwen, a virtual human developed by the Qwen Team, Alibaba Group, capable of perceiving auditory and visual inputs, as well as generating text and speech."}
+        ],
     },
     {
         "role": "user",
@@ -833,7 +843,9 @@ print(text)
 ```
 {
     "role": "system",
-    "content": "You are Qwen, a virtual human developed by the Qwen Team, Alibaba Group, capable of perceiving auditory and visual inputs, as well as generating text and speech.",
+    "content": [
+        {"type": "text", "text": "You are Qwen, a virtual human developed by the Qwen Team, Alibaba Group, capable of perceiving auditory and visual inputs, as well as generating text and speech."}
+    ]
 }
 ```
 #### 使用视频中的音频
@@ -1090,7 +1102,7 @@ git checkout 729feed3ec2beefe63fda30a345ef363d08062f8
 pip install setuptools_scm torchdiffeq resampy x_transformers qwen-omni-utils accelerate
 pip install -r requirements/cuda.txt 
 pip install .
-pip install git+https://github.com/BakerBunker/transformers@21dbefaa54e5bf180464696aa70af0bfc7a61d53
+pip install git+https://github.com/huggingface/transformers
 ```
 
 ### 本地离线推理

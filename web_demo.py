@@ -64,7 +64,7 @@ def _launch_demo(args, model, processor):
 
     def format_history(history: list, system_prompt: str):
         messages = []
-        messages.append({"role": "system", "content": system_prompt})
+        messages.append({"role": "system", "content": [{"type": "text", "text": system_prompt}]})
         for item in history:
             if isinstance(item["content"], str):
                 messages.append({"role": item['role'], "content": item['content']})
