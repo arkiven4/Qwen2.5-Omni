@@ -45,7 +45,7 @@ WORKDIR /data/shared/Qwen/
 FROM dev as bundle_req
 RUN --mount=type=cache,target=/root/.cache/pip pip3 install networkx==3.1
 RUN --mount=type=cache,target=/root/.cache/pip pip3 install torch==2.6.0 torchvision==0.21.0 torchaudio==2.6.0 xformers==0.0.29.post2
-RUN --mount=type=cache,target=/root/.cache/pip pip3 install git+https://github.com/huggingface/transformers  \
+RUN --mount=type=cache,target=/root/.cache/pip pip3 install git+https://github.com/huggingface/transformers@v4.51.3-Qwen2.5-Omni-preview  \
     && pip3 install accelerate qwen-omni-utils modelscope_studio
 
 FROM bundle_req as bundle_vllm
@@ -80,16 +80,17 @@ RUN --mount=type=cache,target=/root/.cache/ccache \
         && cd /data/shared/code \
         && git clone -b qwen2_omni_public https://github.com/fyabc/vllm.git \
         && cd vllm \
-        && git checkout 729feed3ec2beefe63fda30a345ef363d08062f8 \
+        && git checkout de8f43fbe9428b14d31ac5ec45d065cd3e5c3ee0 \
         && python3 use_existing_torch.py \
         && pip3 install setuptools_scm torchdiffeq resampy x_transformers \
         && pip3 install -r requirements/cuda.txt \
+        && pip3 install --upgrade setuptools wheel \
         && pip3 install . --no-build-isolation \
         && cd /data/shared/Qwen \
         && rm -rf /data/shared/code/vllm; \
     fi
 
-RUN --mount=type=cache,target=/root/.cache/pip pip3 install git+https://github.com/huggingface/transformers
+RUN --mount=type=cache,target=/root/.cache/pip pip3 install git+https://github.com/huggingface/transformers@v4.51.3-Qwen2.5-Omni-preview
 
 RUN --mount=type=cache,target=/root/.cache/pip \
     pip3 install \
