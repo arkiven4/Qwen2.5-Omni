@@ -22,6 +22,7 @@
 </a>
 
 ## 新闻
+* 2025.04.30: 令人激动！我们发布了Qwen2.5-Omni-3B，以便于更多的平台能够运行Qwen2.5-Omni，模型目前可以在[Hugging Face](https://huggingface.co/Qwen/Qwen2.5-Omni-3B)中下载，该模型的[性能指标](#性能指标)信息已经更新，并且可以通过[最小显存占用信息](#最小gpu内存需求)来了解资源需求。为了更好的体验，[transformers](#--transformers-usage)和[vllm](#deployment-with-vllm)代码已经更新，您可以重新拉取最新的[官方镜像](#-docker)来获取他们。
 * 2025.04.11: 我们正式发布了支持音频输出的vllm版本！请从源码或者我们的镜像中来体验。
 * 2025.04.02: ⭐️⭐️⭐️ Qwen2.5-Omni 达到 Hugging Face Trending 榜的 top-1! 
 * 2025.03.29: ⭐️⭐️⭐️ Qwen2.5-Omni 达到 Hugging Face Trending 榜的 top-2! 
@@ -129,6 +130,10 @@ Qwen2.5-Omni在包括图像，音频，音视频等各种模态下的表现都�
     <td class="tg-0lax">-|-|-|42.90%</td>
   </tr>
   <tr>
+    <td class="tg-0lax">Qwen2.5-Omni-3B</td>
+    <td class="tg-0lax">52.14%|52.08%|52.83%|52.19%</td>
+  </tr>
+  <tr>
     <td class="tg-0lax">Qwen2.5-Omni-7B</td>
     <td class="tg-0lax"><strong>55.25%</strong>|<strong>60.00%</strong>|52.83%|<strong>56.13%</strong></td>
   </tr>
@@ -151,7 +156,7 @@ Qwen2.5-Omni在包括图像，音频，音视频等各种模态下的表现都�
     <td class="tg-9j4x" colspan="3">ASR</td>
   </tr>
   <tr>
-    <td class="tg-0lax" rowspan="11">Librispeech<br>dev-clean | dev other | test-clean | test-other</td>
+    <td class="tg-0lax" rowspan="12">Librispeech<br>dev-clean | dev other | test-clean | test-other</td>
     <td class="tg-0lax">SALMONN</td>
     <td class="tg-0lax">-|-|2.1|4.9</td>
   </tr>
@@ -192,11 +197,15 @@ Qwen2.5-Omni在包括图像，音频，音视频等各种模态下的表现都�
     <td class="tg-0lax"><strong>1.3</strong>|<strong>3.4</strong>|<strong>1.6</strong>|3.6</td>
   </tr>
   <tr>
+    <td class="tg-0lax">Qwen2.5-Omni-3B</td>
+    <td class="tg-0lax">2.0|4.1|2.2|4.5</td>
+  </tr>
+  <tr>
     <td class="tg-0lax">Qwen2.5-Omni-7B</td>
     <td class="tg-0lax">1.6|3.5|1.8|3.4</td>
   </tr>
   <tr>
-    <td class="tg-0lax" rowspan="4">Common Voice 15<br>en | zh | yue | fr</td>
+    <td class="tg-0lax" rowspan="5">Common Voice 15<br>en | zh | yue | fr</td>
     <td class="tg-0lax">Whisper-large-v3</td>
     <td class="tg-0lax">9.3|12.8|10.9|10.8</td>
   </tr>
@@ -209,11 +218,15 @@ Qwen2.5-Omni在包括图像，音频，音视频等各种模态下的表现都�
     <td class="tg-0lax">8.6|6.9|<strong>5.9</strong>|9.6</td>
   </tr>
   <tr>
+    <td class="tg-0lax">Qwen2.5-Omni-3B</td>
+    <td class="tg-0lax">9.1|6.0|11.6|9.6</td>
+  </tr>
+  <tr>
     <td class="tg-0lax">Qwen2.5-Omni-7B</td>
     <td class="tg-0lax"><strong>7.6</strong>|<strong>5.2</strong>|7.3|<strong>7.5</strong></td>
   </tr>
   <tr>
-    <td class="tg-0lax" rowspan="7">Fleurs<br>zh | en</td>
+    <td class="tg-0lax" rowspan="8">Fleurs<br>zh | en</td>
     <td class="tg-0lax">Whisper-large-v3</td>
     <td class="tg-0lax">7.7|4.1</td>
   </tr>
@@ -237,12 +250,16 @@ Qwen2.5-Omni在包括图像，音频，音视频等各种模态下的表现都�
     <td class="tg-0lax">Qwen2-Audio</td>
     <td class="tg-0lax">7.5|-</td>
   </tr>
+    <tr>
+    <td class="tg-0lax">Qwen2.5-Omni-3B</td>
+    <td class="tg-0lax">3.2|5.4</td>
+  </tr>
   <tr>
     <td class="tg-0lax">Qwen2.5-Omni-7B</td>
     <td class="tg-0lax"><strong>3.0</strong>|4.1</td>
   </tr>
   <tr>
-    <td class="tg-0lax" rowspan="5">Wenetspeech<br>test-net | test-meeting</td>
+    <td class="tg-0lax" rowspan="6">Wenetspeech<br>test-net | test-meeting</td>
     <td class="tg-0lax">Seed-ASR-Chinese</td>
     <td class="tg-0lax"><strong>4.7|5.7</strong></td>
   </tr>
@@ -259,17 +276,25 @@ Qwen2.5-Omni在包括图像，音频，音视频等各种模态下的表现都�
     <td class="tg-0lax">6.8|7.4</td>
   </tr>
   <tr>
+    <td class="tg-0lax">Qwen2.5-Omni-3B</td>
+    <td class="tg-0lax">6.3|8.1</td>
+  </tr>
+  <tr>
     <td class="tg-0lax">Qwen2.5-Omni-7B</td>
     <td class="tg-0lax">5.9|7.7</td>
   </tr>
   <tr>
-    <td class="tg-0lax" rowspan="3">Voxpopuli-V1.0-en</td>
+    <td class="tg-0lax" rowspan="4">Voxpopuli-V1.0-en</td>
     <td class="tg-0lax">Llama-3-8B</td>
     <td class="tg-0lax">6.2</td>
   </tr>
   <tr>
     <td class="tg-0lax">Llama-3-70B</td>
     <td class="tg-0lax"><strong>5.7</strong></td>
+  </tr>
+  <tr>
+    <td class="tg-0lax">Qwen2.5-Omni-3B</td>
+    <td class="tg-0lax">6.6</td>
   </tr>
   <tr>
     <td class="tg-0lax">Qwen2.5-Omni-7B</td>
@@ -279,7 +304,7 @@ Qwen2.5-Omni在包括图像，音频，音视频等各种模态下的表现都�
     <td class="tg-9j4x" colspan="3">S2TT</td>
   </tr>
   <tr>
-    <td class="tg-0lax" rowspan="8">CoVoST2<br>en-de | de-en | en-zh | zh-en</td>
+    <td class="tg-0lax" rowspan="9">CoVoST2<br>en-de | de-en | en-zh | zh-en</td>
     <td class="tg-0lax">SALMONN</td>
     <td class="tg-0lax">18.6|-|33.1|-</td>
   </tr>
@@ -308,6 +333,10 @@ Qwen2.5-Omni在包括图像，音频，音视频等各种模态下的表现都�
     <td class="tg-0lax">29.9|35.2|45.2|24.4</td>
   </tr>
   <tr>
+    <td class="tg-0lax">Qwen2.5-Omni-3B</td>
+    <td class="tg-0lax">28.3|38.1|41.4|26.6</td>
+  </tr>
+  <tr>
     <td class="tg-0lax">Qwen2.5-Omni-7B</td>
     <td class="tg-0lax"><strong>30.2</strong>|37.7|41.4|<strong>29.4</strong></td>
   </tr>
@@ -315,7 +344,7 @@ Qwen2.5-Omni在包括图像，音频，音视频等各种模态下的表现都�
     <td class="tg-9j4x" colspan="3">SER</td>
   </tr>
   <tr>
-    <td class="tg-0lax" rowspan="5">Meld</td>
+    <td class="tg-0lax" rowspan="6">Meld</td>
     <td class="tg-0lax">WavLM-large</td>
     <td class="tg-0lax">0.542</td>
   </tr>
@@ -332,6 +361,10 @@ Qwen2.5-Omni在包括图像，音频，音视频等各种模态下的表现都�
     <td class="tg-0lax">0.553</td>
   </tr>
   <tr>
+    <td class="tg-0lax">Qwen2.5-Omni-3B</td>
+    <td class="tg-0lax">0.558</td>
+  </tr>
+  <tr>
     <td class="tg-0lax">Qwen2.5-Omni-7B</td>
     <td class="tg-0lax"><strong>0.570</strong></td>
   </tr>
@@ -339,7 +372,7 @@ Qwen2.5-Omni在包括图像，音频，音视频等各种模态下的表现都�
     <td class="tg-9j4x" colspan="3">VSC</td>
   </tr>
   <tr>
-    <td class="tg-0lax" rowspan="5">VocalSound</td>
+    <td class="tg-0lax" rowspan="6">VocalSound</td>
     <td class="tg-0lax">CLAP</td>
     <td class="tg-0lax">0.495</td>
   </tr>
@@ -356,6 +389,10 @@ Qwen2.5-Omni在包括图像，音频，音视频等各种模态下的表现都�
     <td class="tg-0lax"><strong>0.939</strong></td>
   </tr>
   <tr>
+    <td class="tg-0lax">Qwen2.5-Omni-3B</td>
+    <td class="tg-0lax">0.936</td>
+  </tr>
+  <tr>
     <td class="tg-0lax">Qwen2.5-Omni-7B</td>
     <td class="tg-0lax"><strong>0.939</strong></td>
   </tr>
@@ -363,28 +400,36 @@ Qwen2.5-Omni在包括图像，音频，音视频等各种模态下的表现都�
     <td class="tg-9j4x" colspan="3">Music</td>
   </tr>
   <tr>
-    <td class="tg-0lax" rowspan="2">GiantSteps Tempo</td>
+    <td class="tg-0lax" rowspan="3">GiantSteps Tempo</td>
     <td class="tg-0lax">Llark-7B</td>
     <td class="tg-0lax">0.86</td>
+  </tr>
+  <tr>
+    <td class="tg-0lax">Qwen2.5-Omni-3B</td>
+    <td class="tg-0lax"><strong>0.88</strong></td>
   </tr>
   <tr>
     <td class="tg-0lax">Qwen2.5-Omni-7B</td>
     <td class="tg-0lax"><strong>0.88</strong></td>
   </tr>
   <tr>
-    <td class="tg-0lax" rowspan="2">MusicCaps</td>
+    <td class="tg-0lax" rowspan="3">MusicCaps</td>
     <td class="tg-0lax">LP-MusicCaps</td>
-    <td class="tg-0lax">0.291|0.149|0.089|<strong>0.061</strong>|<strong>0.129</strong>|0.130</td>
+    <td class="tg-0lax">0.291|0.149|0.089|<strong>0.061</strong>|0.129|0.130</td>
+  </tr>
+  <tr>
+    <td class="tg-0lax">Qwen2.5-Omni-3B</td>
+    <td class="tg-0lax">0.325|<strong>0.163</strong>|<strong>0.093</strong>|0.057|<strong>0.132</strong>|<strong>0.229</strong></td>
   </tr>
   <tr>
     <td class="tg-0lax">Qwen2.5-Omni-7B</td>
-    <td class="tg-0lax"><strong>0.328</strong>|<strong>0.162</strong>|<strong>0.090</strong>|0.055|0.127|<strong>0.225</strong></td>
+    <td class="tg-0lax"><strong>0.328</strong>|0.162|0.090|0.055|0.127|0.225</td>
   </tr>
   <tr>
     <td class="tg-9j4x" colspan="3">Audio Reasoning</td>
   </tr>
   <tr>
-    <td class="tg-0lax" rowspan="3">MMAU<br>Sound | Music | Speech | Avg</td>
+    <td class="tg-0lax" rowspan="4">MMAU<br>Sound | Music | Speech | Avg</td>
     <td class="tg-0lax">Gemini-Pro-V1.5</td>
     <td class="tg-0lax">56.75|49.40|58.55|54.90</td>
   </tr>
@@ -393,14 +438,18 @@ Qwen2.5-Omni在包括图像，音频，音视频等各种模态下的表现都�
     <td class="tg-0lax">54.95|50.98|42.04|49.20</td>
   </tr>
   <tr>
+    <td class="tg-0lax">Qwen2.5-Omni-3B</td>
+    <td class="tg-0lax"><strong>70.27</strong>|60.48|59.16|63.30</td>
+  </tr>
+  <tr>
     <td class="tg-0lax">Qwen2.5-Omni-7B</td>
-    <td class="tg-0lax"><strong>67.87|69.16|59.76|65.60</strong></td>
+    <td class="tg-0lax">67.87|<strong>69.16|59.76|65.60</strong></td>
   </tr>
   <tr>
     <td class="tg-9j4x" colspan="3">Voice Chatting</td>
   </tr>
   <tr>
-    <td class="tg-0lax" rowspan="8">VoiceBench<br>AlpacaEval | CommonEval | SD-QA | MMSU</td>
+    <td class="tg-0lax" rowspan="9">VoiceBench<br>AlpacaEval | CommonEval | SD-QA | MMSU</td>
     <td class="tg-0lax">Ultravox-v0.4.1-LLaMA-3.1-8B</td>
     <td class="tg-0lax"><strong>4.55</strong>|3.90|53.35|47.17</td>
   </tr>
@@ -428,12 +477,16 @@ Qwen2.5-Omni在包括图像，音频，音视频等各种模态下的表现都�
     <td class="tg-0lax">Qwen2-Audio</td>
     <td class="tg-0lax">3.74|3.43|35.71|35.72</td>
   </tr>
+    <tr>
+    <td class="tg-0lax">Qwen2.5-Omni-3B</td>
+    <td class="tg-0lax">4.32|4.00|49.37|50.23</td>
+  </tr>
   <tr>
     <td class="tg-0lax">Qwen2.5-Omni-7B</td>
     <td class="tg-0lax">4.49|3.93|<strong>55.71</strong>|<strong>61.32</strong></td>
   </tr>
   <tr>
-    <td class="tg-0lax" rowspan="8">VoiceBench<br>OpenBookQA | IFEval | AdvBench | Avg</td>
+    <td class="tg-0lax" rowspan="9">VoiceBench<br>OpenBookQA | IFEval | AdvBench | Avg</td>
     <td class="tg-0lax">Ultravox-v0.4.1-LLaMA-3.1-8B</td>
     <td class="tg-0lax">65.27|<strong>66.88</strong>|98.46|71.45</td>
   </tr>
@@ -462,6 +515,10 @@ Qwen2.5-Omni在包括图像，音频，音视频等各种模态下的表现都�
     <td class="tg-0lax">49.45|26.33|96.73|55.35</td>
   </tr>
   <tr>
+    <td class="tg-0lax">Qwen2.5-Omni-3B</td>
+    <td class="tg-0lax">74.73|42.10|98.85|68.81</td>
+  </tr>
+  <tr>
     <td class="tg-0lax">Qwen2.5-Omni-7B</td>
     <td class="tg-0lax"><strong>81.10</strong>|52.87|<strong>99.42</strong>|<strong>74.12</strong></td>
   </tr>
@@ -471,52 +528,52 @@ Qwen2.5-Omni在包括图像，音频，音视频等各种模态下的表现都�
 <details>
 <summary>Image -> Text</summary>
 
-| Dataset                        | Qwen2.5-Omni-7B | Other Best | Qwen2.5-VL-7B | GPT-4o-mini | 
-|--------------------------------|--------------|------------|---------------|-------------|
-| MMMU<sub>val</sub>             | 59.2         | 53.9       | 58.6          | **60.0**    | 
-| MMMU-Pro<sub>overall</sub>     | 36.6         | -          | **38.3**      | 37.6        | 
-| MathVista<sub>testmini</sub>   | 67.9         | **71.9**   | 68.2          | 52.5        | 
-| MathVision<sub>full</sub>      | 25.0         | 23.1       | **25.1**      | -           | 
-| MMBench-V1.1-EN<sub>test</sub> | 81.8         | 80.5       | **82.6**      | 76.0        | 
-| MMVet<sub>turbo</sub>          | 66.8         | **67.5**   | 67.1          | 66.9        | 
-| MMStar                         | **64.0**     | **64.0**   | 63.9          | 54.8        | 
-| MME<sub>sum</sub>              | 2340         | **2372**   | 2347          | 2003        | 
-| MuirBench                      | 59.2         | -          | **59.2**      | -           | 
-| CRPE<sub>relation</sub>        | **76.5**     | -          | 76.4          | -           | 
-| RealWorldQA<sub>avg</sub>      | 70.3         | **71.9**   | 68.5          | -           | 
-| MME-RealWorld<sub>en</sub>     | **61.6**     | -          | 57.4          | -           | 
-| MM-MT-Bench                    | 6.0          | -          | **6.3**       | -           | 
-| AI2D                           | 83.2         | **85.8**   | 83.9          | -           | 
-| TextVQA<sub>val</sub>          | 84.4         | 83.2       | **84.9**      | -           | 
-| DocVQA<sub>test</sub>          | 95.2         | 93.5       | **95.7**      | -           | 
-| ChartQA<sub>test Avg</sub>     | 85.3         | 84.9       | **87.3**      | -           | 
-| OCRBench_V2<sub>en</sub>       | **57.8**     | -          | 56.3          | -           | 
+| Dataset                        | Qwen2.5-Omni-7B | Qwen2.5-Omni-3B | Other Best | Qwen2.5-VL-7B | GPT-4o-mini | 
+|--------------------------------|--------------|------------|------------|---------------|-------------|
+| MMMU<sub>val</sub>             | 59.2         | 53.1       | 53.9       | 58.6          | **60.0**    | 
+| MMMU-Pro<sub>overall</sub>     | 36.6         | 29.7       | -          | **38.3**      | 37.6        | 
+| MathVista<sub>testmini</sub>   | 67.9         | 59.4       | **71.9**   | 68.2          | 52.5        | 
+| MathVision<sub>full</sub>      | 25.0         | 20.8       | 23.1       | **25.1**      | -           | 
+| MMBench-V1.1-EN<sub>test</sub> | 81.8         | 77.8       | 80.5       | **82.6**      | 76.0        | 
+| MMVet<sub>turbo</sub>          | 66.8         | 62.1       | **67.5**   | 67.1          | 66.9        | 
+| MMStar                         | **64.0**     | 55.7       | **64.0**   | 63.9          | 54.8        | 
+| MME<sub>sum</sub>              | 2340         | 2117       | **2372**   | 2347          | 2003        | 
+| MuirBench                      | 59.2         | 48.0       | -          | **59.2**      | -           | 
+| CRPE<sub>relation</sub>        | **76.5**     | 73.7       | -          | 76.4          | -           | 
+| RealWorldQA<sub>avg</sub>      | 70.3         | 62.6       | **71.9**   | 68.5          | -           | 
+| MME-RealWorld<sub>en</sub>     | **61.6**     | 55.6       | -          | 57.4          | -           | 
+| MM-MT-Bench                    | 6.0          | 5.0        | -          | **6.3**       | -           | 
+| AI2D                           | 83.2         | 79.5       | **85.8**   | 83.9          | -           | 
+| TextVQA<sub>val</sub>          | 84.4         | 79.8       | 83.2       | **84.9**      | -           | 
+| DocVQA<sub>test</sub>          | 95.2         | 93.3       | 93.5       | **95.7**      | -           | 
+| ChartQA<sub>test Avg</sub>     | 85.3         | 82.8       | 84.9       | **87.3**      | -           | 
+| OCRBench_V2<sub>en</sub>       | **57.8**     | 51.7       | -          | 56.3          | -           | 
 
 
-| Dataset                  | Qwen2.5-Omni-7B | Qwen2.5-VL-7B | Grounding DINO | Gemini 1.5 Pro | 
-|--------------------------|--------------|---------------|----------------|----------------|
-| Refcoco<sub>val</sub>    | 90.5         | 90.0          | **90.6**       | 73.2           | 
-| Refcoco<sub>textA</sub>  | **93.5**     | 92.5          | 93.2           | 72.9           | 
-| Refcoco<sub>textB</sub>  | 86.6         | 85.4          | **88.2**       | 74.6           | 
-| Refcoco+<sub>val</sub>   | 85.4         | 84.2          | **88.2**       | 62.5           | 
-| Refcoco+<sub>textA</sub> | **91.0**     | 89.1          | 89.0           | 63.9           | 
-| Refcoco+<sub>textB</sub> | **79.3**     | 76.9          | 75.9           | 65.0           | 
-| Refcocog+<sub>val</sub>  | **87.4**     | 87.2          | 86.1           | 75.2           | 
-| Refcocog+<sub>test</sub> | **87.9**     | 87.2          | 87.0           | 76.2           | 
-| ODinW                    | 42.4         | 37.3          | **55.0**       | 36.7           | 
-| PointGrounding           | 66.5         | **67.3**      | -              | -              | 
+| Dataset                  | Qwen2.5-Omni-7B | Qwen2.5-Omni-3B | Qwen2.5-VL-7B | Grounding DINO | Gemini 1.5 Pro | 
+|--------------------------|--------------|---------------|---------------|----------------|----------------|
+| Refcoco<sub>val</sub>    | 90.5         | 88.7          | 90.0          | **90.6**       | 73.2           | 
+| Refcoco<sub>textA</sub>  | **93.5**     | 91.8          | 92.5          | 93.2           | 72.9           | 
+| Refcoco<sub>textB</sub>  | 86.6         | 84.0          | 85.4          | **88.2**       | 74.6           | 
+| Refcoco+<sub>val</sub>   | 85.4         | 81.1          | 84.2          | **88.2**       | 62.5           | 
+| Refcoco+<sub>textA</sub> | **91.0**     | 87.5          | 89.1          | 89.0           | 63.9           | 
+| Refcoco+<sub>textB</sub> | **79.3**     | 73.2          | 76.9          | 75.9           | 65.0           | 
+| Refcocog+<sub>val</sub>  | **87.4**     | 85.0          | 87.2          | 86.1           | 75.2           | 
+| Refcocog+<sub>test</sub> | **87.9**     | 85.1          | 87.2          | 87.0           | 76.2           | 
+| ODinW                    | 42.4         | 39.2          | 37.3          | **55.0**       | 36.7           | 
+| PointGrounding           | 66.5         | 46.2          | **67.3**      | -              | -              | 
 </details>
 
 
 <details>
 <summary>Video(without audio) -> Text</summary>
 
-| Dataset                     | Qwen2.5-Omni-7B | Other Best | Qwen2.5-VL-7B | GPT-4o-mini | 
-|-----------------------------|--------------|------------|---------------|-------------|
-| Video-MME<sub>w/o sub</sub> | 64.3         | 63.9       | **65.1**      | 64.8        | 
-| Video-MME<sub>w sub</sub>   | **72.4**     | 67.9       | 71.6          | -           | 
-| MVBench                     | **70.3**     | 67.2       | 69.6          | -           | 
-| EgoSchema<sub>test</sub>    | **68.6**     | 63.2       | 65.0          | -           | 
+| Dataset                     | Qwen2.5-Omni-7B | Qwen2.5-Omni-3B | Other Best | Qwen2.5-VL-7B | GPT-4o-mini | 
+|-----------------------------|--------------|------------|------------|---------------|-------------|
+| Video-MME<sub>w/o sub</sub> | 64.3         | 62.0       | 63.9       | **65.1**      | 64.8        | 
+| Video-MME<sub>w sub</sub>   | **72.4**     | 68.6       | 67.9       | 71.6          | -           | 
+| MVBench                     | **70.3**     | 68.7       | 67.2       | 69.6          | -           | 
+| EgoSchema<sub>test</sub>    | **68.6**     | 61.4       | 63.2       | 65.0          | -           | 
 </details>
 
 <details>
@@ -534,7 +591,7 @@ Qwen2.5-Omni在包括图像，音频，音视频等各种模态下的表现都�
     <td class="tg-9j4x" colspan="3">Content Consistency</td>
   </tr>
   <tr>
-    <td class="tg-0lax" rowspan="9">SEED<br>test-zh | test-en | test-hard </td>
+    <td class="tg-0lax" rowspan="11">SEED<br>test-zh | test-en | test-hard </td>
     <td class="tg-0lax">Seed-TTS_ICL</td>
     <td class="tg-0lax">1.11 | 2.24 | 7.58</td>
   </tr>
@@ -563,6 +620,14 @@ Qwen2.5-Omni在包括图像，音频，音视频等各种模态下的表现都�
     <td class="tg-0lax">1.45 | 2.38 | 8.08</td>
   </tr>
   <tr>
+    <td class="tg-0lax">Qwen2.5-Omni-3B_ICL</td>
+    <td class="tg-0lax">1.95 | 2.87 | 9.92</td>
+  </tr>
+  <tr>
+    <td class="tg-0lax">Qwen2.5-Omni-3B_RL</td>
+    <td class="tg-0lax">1.58 | 2.51 | 7.86</td>
+  </tr>
+  <tr>
     <td class="tg-0lax">Qwen2.5-Omni-7B_ICL</td>
     <td class="tg-0lax">1.70 | 2.72 | 7.97</td>
   </tr>
@@ -574,7 +639,7 @@ Qwen2.5-Omni在包括图像，音频，音视频等各种模态下的表现都�
     <td class="tg-9j4x" colspan="3">Speaker Similarity</td>
   </tr>
   <tr>
-    <td class="tg-0lax" rowspan="9">SEED<br>test-zh | test-en | test-hard </td>
+    <td class="tg-0lax" rowspan="11">SEED<br>test-zh | test-en | test-hard </td>
     <td class="tg-0lax">Seed-TTS_ICL</td>
     <td class="tg-0lax">0.796 | 0.762 | 0.776</td>
   </tr>
@@ -603,6 +668,14 @@ Qwen2.5-Omni在包括图像，音频，音视频等各种模态下的表现都�
     <td class="tg-0lax">0.753 | 0.654 | 0.732</td>
   </tr>
   <tr>
+    <td class="tg-0lax">Qwen2.5-Omni-3B_ICL</td>
+    <td class="tg-0lax">0.741 | 0.635 | 0.748</td>
+  </tr>
+  <tr>
+    <td class="tg-0lax">Qwen2.5-Omni-3B_RL</td>
+    <td class="tg-0lax">0.744 | 0.635 | 0.746</td>
+  </tr>
+  <tr>
     <td class="tg-0lax">Qwen2.5-Omni-7B_ICL</td>
     <td class="tg-0lax">0.752 | 0.632 | 0.747</td>
   </tr>
@@ -616,18 +689,18 @@ Qwen2.5-Omni在包括图像，音频，音视频等各种模态下的表现都�
 <details>
 <summary>Text -> Text</summary>
 
-| Dataset                           | Qwen2.5-Omni-7B | Qwen2.5-7B | Qwen2-7B | Llama3.1-8B | Gemma2-9B | 
-|-----------------------------------|-----------|------------|----------|-------------|-----------|
-| MMLU-Pro                          | 47.0      | **56.3**   | 44.1     | 48.3        | 52.1      | 
-| MMLU-redux                        | 71.0      | **75.4**   | 67.3     | 67.2        | 72.8      | 
-| LiveBench<sub>0831</sub>          | 29.6      | **35.9**   | 29.2     | 26.7        | 30.6      | 
-| GPQA                              | 30.8      | **36.4**   | 34.3     | 32.8        | 32.8      | 
-| MATH                              | 71.5      | **75.5**   | 52.9     | 51.9        | 44.3      | 
-| GSM8K                             | 88.7      | **91.6**   | 85.7     | 84.5        | 76.7      | 
-| HumanEval                         | 78.7      | **84.8**   | 79.9     | 72.6        | 68.9      | 
-| MBPP                              | 73.2      | **79.2**   | 67.2     | 69.6        | 74.9      | 
-| MultiPL-E                         | 65.8      | **70.4**   | 59.1     | 50.7        | 53.4      | 
-| LiveCodeBench<sub>2305-2409</sub> | 24.6      | **28.7**   | 23.9     | 8.3         | 18.9      | 
+| Dataset                           | Qwen2.5-Omni-7B | Qwen2.5-Omni-3B | Qwen2.5-7B | Qwen2.5-3B | Qwen2-7B | Llama3.1-8B | Gemma2-9B | 
+|-----------------------------------|-----------|------------|------------|------------|------------|-------------|-----------|
+| MMLU-Pro                          | 47.0      | 40.4       | **56.3**   | 43.7       | 44.1       | 48.3        | 52.1      | 
+| MMLU-redux                        | 71.0      | 60.9       | **75.4**   | 64.4       | 67.3       | 67.2        | 72.8      | 
+| LiveBench<sub>0831</sub>          | 29.6      | 22.3       | **35.9**   | 26.8       | 29.2       | 26.7        | 30.6      | 
+| GPQA                              | 30.8      | 34.3       | **36.4**   | 30.3       | 34.3       | 32.8        | 32.8      | 
+| MATH                              | 71.5      | 63.6       | **75.5**   | 65.9       | 52.9       | 51.9        | 44.3      | 
+| GSM8K                             | 88.7      | 82.6       | **91.6**   | 86.7       | 85.7       | 84.5        | 76.7      | 
+| HumanEval                         | 78.7      | 70.7       | **84.8**   |	74.4       | 79.9       | 72.6        | 68.9      | 
+| MBPP                              | 73.2      | 70.4       | **79.2**   | 72.7       | 67.2       | 69.6        | 74.9      | 
+| MultiPL-E                         | 65.8      | 57.6       | **70.4**   | 60.2       | 59.1       | 50.7        | 53.4      | 
+| LiveCodeBench<sub>2305-2409</sub> | 24.6      | 16.5       | **28.7**   | 19.9       | 23.9       | 8.3         | 18.9      | 
 </details>
 
 ## 快速开始
@@ -635,7 +708,7 @@ Qwen2.5-Omni在包括图像，音频，音视频等各种模态下的表现都�
 接下来，我们将提供如何在🤖 ModelScope和🤗 Transformers上使用 Qwen2.5-Omni. Qwen2.5-Omni的代码在Hugging Face transformers的最新版本中，我们建议您从源代码构建：
 ```
 pip uninstall transformers
-pip install git+https://github.com/huggingface/transformers
+pip install git+https://github.com/huggingface/transformers@v4.51.3-Qwen2.5-Omni-preview
 pip install accelerate
 ```
 否则您可能会遇到以下错误：
@@ -714,16 +787,16 @@ sf.write(
 )
 ```
 
-<details>
-<summary>最小GPU内存需求</summary>
+#### 最小GPU内存需求
 
-| 精度 | 15(s) 视频 | 30(s) 视频 | 60(s) 视频 |
-|-----------| ------------- | --------- | -------------- |
-| FP32      | 93.56 GB      | 不推荐 | 不推荐      |
-| BF16      | 31.11 GB      | 41.85 GB  | 60.19 GB       |
+| 模型 | 精度 | 15(s) 视频 | 30(s) 视频 | 60(s) 视频 |
+|--------------|-----------| ------------- | ------------- | ------------------ |
+| Qwen-Omni-3B | FP32      | 89.10 GB      | 不推荐 | 不推荐      |
+| Qwen-Omni-3B | BF16      | 18.38 GB      | 22.43 GB      | 28.22 GB           |
+| Qwen-Omni-7B | FP32      | 93.56 GB      | 不推荐 | 不推荐      |
+| Qwen-Omni-7B | BF16      | 31.11 GB      | 41.85 GB      | 60.19 GB           |
 
-注意: 上述的表格所展示的只是使用`transformers`进行推理的理论最小值，并且`BF16`的结果是在`attn_implementation="flash_attention_2"`的情况下测试得到的，但是在实际中，内存使用通常比这个值要高至少1.2倍。 有关更多信息，请参阅[这里](https://huggingface.co/docs/accelerate/main/en/usage_guides/model_size_estimator)。
-</details>  
+注意: 上述的表格所展示的只是使用`transformers`进行推理的理论最小值，并且`BF16`的结果是在`attn_implementation="flash_attention_2"`的情况下测试得到的，但是在实际中，内存使用通常比这个值要高至少1.2倍。 有关更多信息，请参阅[这里](https://huggingface.co/docs/accelerate/main/en/usage_guides/model_size_estimator)。并且我们目前已经在规划研发能够在较低资源消耗需求下进行推理的版本，以便于在大多数平台上能够运行Qwen2.5-Omni，敬请期待！
 
 <details>
 <summary>视频URL超链接使用方法</summary>
@@ -1065,7 +1138,12 @@ pip install -r requirements_web_demo.txt
 为了启用 FlashAttention-2，使用如下命令启动演示：
 
 ```bash
+# default for Qwen2.5-Omni-7B
 python web_demo.py --flash-attn2
+```
+```bash
+# for Qwen2.5-Omni-3B
+python web_demo.py --flash-attn2 -c Qwen/Qwen2.5-Omni-3B
 ```
 
 这将会加载模型并启用 FlashAttention-2。
@@ -1073,7 +1151,12 @@ python web_demo.py --flash-attn2
 **默认使用方法**: 如果您更希望在不使用 FlashAttention-2 的情况下运行演示，也即不指定`--flash-attn2`参数，此时演示将会使用默认的注意力机制实现方法来加噪和运行模型，您可以使用以下命令：
 
 ```bash
+# default for Qwen2.5-Omni-7B
 python web_demo.py
+```
+```bash
+# for Qwen2.5-Omni-3B
+python web_demo.py -c Qwen/Qwen2.5-Omni-3B
 ```
 
 在运行这个命令之后, 您将会在终端中看到类似的输出：
@@ -1098,11 +1181,12 @@ Running on local: http://127.0.0.1:7860/
 ```bash
 git clone -b qwen2_omni_public https://github.com/fyabc/vllm.git
 cd vllm
-git checkout 729feed3ec2beefe63fda30a345ef363d08062f8
+git checkout de8f43fbe9428b14d31ac5ec45d065cd3e5c3ee0
 pip install setuptools_scm torchdiffeq resampy x_transformers qwen-omni-utils accelerate
-pip install -r requirements/cuda.txt 
+pip install -r requirements/cuda.txt
+pip install --upgrade setuptools wheel
 pip install .
-pip install git+https://github.com/huggingface/transformers
+pip install git+https://github.com/huggingface/transformers@v4.51.3-Qwen2.5-Omni-preview
 ```
 
 ### 本地离线推理
@@ -1112,7 +1196,7 @@ pip install git+https://github.com/huggingface/transformers
 ```bash
 # git clone -b qwen2_omni_public https://github.com/fyabc/vllm.git
 # cd vllm
-# git checkout 729feed3ec2beefe63fda30a345ef363d08062f8
+# git checkout de8f43fbe9428b14d31ac5ec45d065cd3e5c3ee0
 # cd examples/offline_inference/qwen2_5_omni/
 
 # only text output for single GPU
