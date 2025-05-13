@@ -22,6 +22,7 @@
 </a>
 
 ## 新闻
+* 2025.05.13: [MNN Chat App](https://github.com/alibaba/MNN/blob/master/apps/Android/MnnLlmChat/README.md#releases) 目前已经支持Qwen2.5-Omni了, 让我们在端侧设备中体验Qwen2.5-Omni吧！
 * 2025.04.30: 令人激动！我们发布了Qwen2.5-Omni-3B，以便于更多的平台能够运行Qwen2.5-Omni，模型目前可以在[Hugging Face](https://huggingface.co/Qwen/Qwen2.5-Omni-3B)中下载，该模型的[性能指标](#性能指标)信息已经更新，并且可以通过[最小显存占用信息](#最小gpu内存需求)来了解资源需求。为了更好的体验，[transformers](#--transformers-usage)和[vllm](#deployment-with-vllm)代码已经更新，您可以重新拉取最新的[官方镜像](#-docker)来获取他们。
 * 2025.04.11: 我们正式发布了支持音频输出的vllm版本！请从源码或者我们的镜像中来体验。
 * 2025.04.02: ⭐️⭐️⭐️ Qwen2.5-Omni 达到 Hugging Face Trending 榜的 top-1! 
