@@ -23,6 +23,7 @@ We release **Qwen2.5-Omni**, the new flagship end-to-end multimodal model in the
 
 
 ## News
+* 2025.05.13: [MNN Chat App](https://github.com/alibaba/MNN/blob/master/apps/Android/MnnLlmChat/README.md#releases) support Qwen2.5-Omni now, let's experience Qwen2.5-Omni on the edge devices!
 * 2025.04.30: Exciting! We We have released Qwen2.5-Omni-3B to enable more platforms to run Qwen2.5-Omni. The model can be downloaded from [Hugging Face](https://huggingface.co/Qwen/Qwen2.5-Omni-3B). The [performance](#performance) of this model is updated, and please refer to [Minimum GPU memory requirements](#minimum-gpu-memory-requirements) for information about resource consumption. And for best experience, [transformers](#--transformers-usage) and [vllm](#deployment-with-vllm) code have update, you can pull the [official docker](#-docker) again to get them.
 * 2025.04.11: We release the new vllm version which support audio ouput now! Please experience it from source or our docker image.
 * 2025.04.02: ⭐️⭐️⭐️ Qwen2.5-Omni reaches top-1 on Hugging Face Trending! 
