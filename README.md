@@ -1239,7 +1239,7 @@ curl http://localhost:8000/v1/chat/completions \
 
 ## Deployment with MNN
 
-Qwen2.5-Omni is now supported in MNN, enabling deployment on edge devices. The MNN models for Qwen2.5-Omni are available for download through Hugging Face ([7B](https://huggingface.co/taobao-mnn/Qwen2.5-Omni-7B-MNN)|[3B](https://huggingface.co/taobao-mnn/Qwen2.5-Omni-3B-MNN) and ModelScope ([7B](https://modelscope.cn/models/MNN/Qwen2.5-Omni-7B-MNN)|[3B](https://modelscope.cn/models/MNN/Qwen2.5-Omni-3B-MNN)), along with usage instructions.  For detailed information, you can visit [MNN](https://github.com/alibaba/MNN) to learn about it.
+Qwen2.5-Omni is now supported in MNN, enabling deployment on edge devices. The MNN models for Qwen2.5-Omni are available for download through Hugging Face ([7B](https://huggingface.co/taobao-mnn/Qwen2.5-Omni-7B-MNN)|[3B](https://huggingface.co/taobao-mnn/Qwen2.5-Omni-3B-MNN)) and ModelScope ([7B](https://modelscope.cn/models/MNN/Qwen2.5-Omni-7B-MNN)|[3B](https://modelscope.cn/models/MNN/Qwen2.5-Omni-3B-MNN)), along with usage instructions.  For detailed information, you can visit [MNN](https://github.com/alibaba/MNN) to learn about it.
 
 The table below shows memory consumption and inference speed benchmarks for the Qwen2.5-Omni MNN implementation across various mobile SoC platforms.
 
