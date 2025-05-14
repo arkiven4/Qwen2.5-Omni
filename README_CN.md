@@ -1240,7 +1240,7 @@ curl http://localhost:8000/v1/chat/completions \
 
 ## 使用MNN部署
 
-Qwen2.5-Omni目前已经在MNN框架中支持，以实现在边缘计算设备上的部署，您可以通过Hugging Face ([7B](https://huggingface.co/taobao-mnn/Qwen2.5-Omni-7B-MNN)|[3B](https://huggingface.co/taobao-mnn/Qwen2.5-Omni-3B-MNN) 或 ModelScope ([7B](https://modelscope.cn/models/MNN/Qwen2.5-Omni-7B-MNN)|[3B](https://modelscope.cn/models/MNN/Qwen2.5-Omni-3B-MNN))下载Qwen2.5-Omni的MNN模型，并查看使用说明。您还可以访问[MNN](https://github.com/alibaba/MNN)以获取更多信息。
+Qwen2.5-Omni目前已经在MNN框架中支持，以实现在边缘计算设备上的部署，您可以通过Hugging Face ([7B](https://huggingface.co/taobao-mnn/Qwen2.5-Omni-7B-MNN)|[3B](https://huggingface.co/taobao-mnn/Qwen2.5-Omni-3B-MNN)) 或 ModelScope ([7B](https://modelscope.cn/models/MNN/Qwen2.5-Omni-7B-MNN)|[3B](https://modelscope.cn/models/MNN/Qwen2.5-Omni-3B-MNN))下载Qwen2.5-Omni的MNN模型，并查看使用说明。您还可以访问[MNN](https://github.com/alibaba/MNN)以获取更多信息。
 
 下表展示了Qwen2.5-Omni在MNN框架中，在几种移动SoC平台的内存消耗和推理速度基准测试结果。
 
