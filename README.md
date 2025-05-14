@@ -23,7 +23,7 @@ We release **Qwen2.5-Omni**, the new flagship end-to-end multimodal model in the
 
 
 ## News
-* 2025.05.13: [MNN Chat App](https://github.com/alibaba/MNN/blob/master/apps/Android/MnnLlmChat/README.md#releases) support Qwen2.5-Omni now, let's experience Qwen2.5-Omni on the edge devices!
+* 2025.05.13: [MNN Chat App](https://github.com/alibaba/MNN/blob/master/apps/Android/MnnLlmChat/README.md#releases) support Qwen2.5-Omni now, let's experience Qwen2.5-Omni on the edge devices! Please refer to [Deployment with MNN](#deployment-with-mnn) for information about memory consumption and inference speed benchmarks.
 * 2025.04.30: Exciting! We We have released Qwen2.5-Omni-3B to enable more platforms to run Qwen2.5-Omni. The model can be downloaded from [Hugging Face](https://huggingface.co/Qwen/Qwen2.5-Omni-3B). The [performance](#performance) of this model is updated, and please refer to [Minimum GPU memory requirements](#minimum-gpu-memory-requirements) for information about resource consumption. And for best experience, [transformers](#--transformers-usage) and [vllm](#deployment-with-vllm) code have update, you can pull the [official docker](#-docker) again to get them.
 * 2025.04.11: We release the new vllm version which support audio ouput now! Please experience it from source or our docker image.
 * 2025.04.02: ⭐️⭐️⭐️ Qwen2.5-Omni reaches top-1 on Hugging Face Trending! 
@@ -51,6 +51,7 @@ We release **Qwen2.5-Omni**, the new flagship end-to-end multimodal model in the
   - [Launch Local Web UI Demo](#launch-local-web-ui-demo)
   - [Real-Time Interaction](#real-time-interaction)
 - [Deployment with vLLM](#deployment-with-vllm)
+- [Deployment with MNN](#deployment-with-mnn)
 - [Docker](#-docker)
 <!-- - [Citation](#citation) -->
 
@@ -1235,6 +1236,23 @@ curl http://localhost:8000/v1/chat/completions \
     ]
     }'
 ```
+
+## Deployment with MNN
+
+Qwen2.5-Omni is now supported in MNN, enabling deployment on edge devices. The MNN models for Qwen2.5-Omni are available for download through Hugging Face ([7B](https://huggingface.co/taobao-mnn/Qwen2.5-Omni-7B-MNN)|[3B](https://huggingface.co/taobao-mnn/Qwen2.5-Omni-3B-MNN) and ModelScope ([7B](https://modelscope.cn/models/MNN/Qwen2.5-Omni-7B-MNN)|[3B](https://modelscope.cn/models/MNN/Qwen2.5-Omni-3B-MNN)), along with usage instructions.  For detailed information, you can visit [MNN](https://github.com/alibaba/MNN) to learn about it.
+
+The table below shows memory consumption and inference speed benchmarks for the Qwen2.5-Omni MNN implementation across various mobile SoC platforms.
+
+| Platform | Snapdragon 8 Gen 1 | Snapdragon 8 Elite | Snapdragon 8 Gen 1 | Snapdragon 8 Elite  |
+|--------------|-----------| ------------- | ------------- | ------------------ |
+| Model Size   | 7B | 7B | 3B | 3B |
+| Memory Peak  | 5.8G | 5.8G | 3.6G | 3.6G |
+| Thinker Prefill Speed | 25.58 tok/s | 46.32 tok/s | 54.31 tok/s | 55.16 tok/s | 
+| Thinker Decode Speed  |  8.35 tok/s | 11.52 tok/s | 15.84 tok/s | 23.31 tok/s | 
+| Talker Prefill Speed  | 17.21 tok/s | 97.77 tok/s | 34.58 tok/s | 217.82 tok/s| 
+| Talker Decode Speed   | 18.75 tok/s | 38.65 tok/s | 51.90 tok/s | 62.34 tok/s | 
+| Code2Wav Speed         |20.83 tok/s | 27.36 tok/s | 28.45 tok/s | 27.36 tok/s | 
+
 
 ## 🐳 Docker
 

@@ -22,7 +22,7 @@
 </a>
 
 ## 新闻
-* 2025.05.13: [MNN Chat App](https://github.com/alibaba/MNN/blob/master/apps/Android/MnnLlmChat/README.md#releases) 目前已经支持Qwen2.5-Omni了, 让我们在端侧设备中体验Qwen2.5-Omni吧！
+* 2025.05.13: [MNN Chat App](https://github.com/alibaba/MNN/blob/master/apps/Android/MnnLlmChat/README.md#releases) 目前已经支持Qwen2.5-Omni了, 让我们在端侧设备中体验Qwen2.5-Omni吧！请访问[使用MNN部署](#使用mnn部署 )来获取有关模型内存消耗和推理速度的基准测试的信息。
 * 2025.04.30: 令人激动！我们发布了Qwen2.5-Omni-3B，以便于更多的平台能够运行Qwen2.5-Omni，模型目前可以在[Hugging Face](https://huggingface.co/Qwen/Qwen2.5-Omni-3B)中下载，该模型的[性能指标](#性能指标)信息已经更新，并且可以通过[最小显存占用信息](#最小gpu内存需求)来了解资源需求。为了更好的体验，[transformers](#--transformers-usage)和[vllm](#deployment-with-vllm)代码已经更新，您可以重新拉取最新的[官方镜像](#-docker)来获取他们。
 * 2025.04.11: 我们正式发布了支持音频输出的vllm版本！请从源码或者我们的镜像中来体验。
 * 2025.04.02: ⭐️⭐️⭐️ Qwen2.5-Omni 达到 Hugging Face Trending 榜的 top-1! 
@@ -50,6 +50,7 @@
   - [启动本地网页演示](#启动本地网页演示)
   - [实时交互](#实时交互)
 - [使用vLLM部署](#使用vLLM部署)
+- [使用MNN部署](#使用mnn部署)
 - [Docker](#-docker)
 <!-- - [引用](#citation) -->
 
@@ -953,7 +954,7 @@ model.disable_talker()
 
 为了获得灵活的体验，我们建议在调用`generate`函数时根据需要决定是否返回音频。当`return_audio`设置为`False`时，模型将仅返回文本输出以更快地获取文本响应。
 
-``python
+```python
 model = Qwen2_5OmniForConditionalGeneration.from_pretrained(
     "Qwen/Qwen2.5-Omni-7B",
     torch_dtype="auto",
@@ -1235,6 +1236,25 @@ curl http://localhost:8000/v1/chat/completions \
     ]
     }'
 ```
+
+
+## 使用MNN部署
+
+Qwen2.5-Omni目前已经在MNN框架中支持，以实现在边缘计算设备上的部署，您可以通过Hugging Face ([7B](https://huggingface.co/taobao-mnn/Qwen2.5-Omni-7B-MNN)|[3B](https://huggingface.co/taobao-mnn/Qwen2.5-Omni-3B-MNN) 或 ModelScope ([7B](https://modelscope.cn/models/MNN/Qwen2.5-Omni-7B-MNN)|[3B](https://modelscope.cn/models/MNN/Qwen2.5-Omni-3B-MNN))下载Qwen2.5-Omni的MNN模型，并查看使用说明。您还可以访问[MNN](https://github.com/alibaba/MNN)以获取更多信息。
+
+下表展示了Qwen2.5-Omni在MNN框架中，在几种移动SoC平台的内存消耗和推理速度基准测试结果。
+
+
+| 平台 | Snapdragon 8 Gen 1 | Snapdragon 8 Elite | Snapdragon 8 Gen 1 | Snapdragon 8 Elite  |
+|--------------|-----------| ------------- | ------------- | ------------------ |
+| 模型大小   | 7B | 7B | 3B | 3B |
+| 内存峰值  | 5.8G | 5.8G | 3.6G | 3.6G |
+| Thinker Prefill Speed | 25.58 tok/s | 46.32 tok/s | 54.31 tok/s | 55.16 tok/s | 
+| Thinker Decode Speed  |  8.35 tok/s | 11.52 tok/s | 15.84 tok/s | 23.31 tok/s | 
+| Talker Prefill Speed  | 17.21 tok/s | 97.77 tok/s | 34.58 tok/s | 217.82 tok/s| 
+| Talker Decode Speed   | 18.75 tok/s | 38.65 tok/s | 51.90 tok/s | 62.34 tok/s | 
+| Code2wav Speed         |20.83 tok/s | 27.36 tok/s | 28.45 tok/s | 27.36 tok/s | 
+
 
 ## 🐳 Docker
 
