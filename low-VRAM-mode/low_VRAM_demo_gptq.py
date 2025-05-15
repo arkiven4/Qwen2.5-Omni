@@ -3,8 +3,6 @@ from modeling_qwen2_5_omni_low_VRAM_mode import Qwen2_5OmniForConditionalGenerat
 from transformers import Qwen2_5OmniProcessor
 from transformers.utils.hub import cached_file
 
-# pip install gptqmodel==2.0.0
-# pip install numpy==2.0.0
 from gptqmodel import GPTQModel
 from gptqmodel.models.base import BaseGPTQModel
 from gptqmodel.models.auto import MODEL_MAP
@@ -17,8 +15,7 @@ import torch
 import time
 import soundfile as sf
 
-model_path = "Qwen/Qwen2.5-Omni-7B-GPTQ"
-
+model_path = "Qwen/Qwen2.5-Omni-7B-GPTQ-Int4"
 
 class Qwen25OmniThinkerGPTQ(BaseGPTQModel):
     loader = Qwen2_5OmniForConditionalGeneration
@@ -102,46 +99,41 @@ model = GPTQModel.load(
     torch_dtype=torch.float16,   
     attn_implementation="flash_attention_2"
 )
-
-from qwen_omni_utils import process_mm_info
 processor = Qwen2_5OmniProcessor.from_pretrained(model_path)
 
-def audio_inference(audio_path, prompt, sys_prompt):
+def video_inference(video_path, prompt, sys_prompt):
     messages = [
         {"role": "system", "content": [
                 {"type": "text", "text": sys_prompt},
             ]},
         {"role": "user", "content": [
-                {"type": "audio", "audio": audio_path},
+                {"type": "video", "video": video_path},
             ]
         },
     ]
     text = processor.apply_chat_template(messages, tokenize=False, add_generation_prompt=True)
 
-    audios, images, videos = process_mm_info(messages, use_audio_in_video=False)
+    audios, images, videos = process_mm_info(messages, use_audio_in_video=True)
     inputs = processor(text=text, audio=audios, images=images, videos=videos, return_tensors="pt", padding=True)
     inputs = inputs.to('cuda').to(model.dtype)
     
 
-    output = model.generate(**inputs, use_audio_in_video=False, return_audio=True)
+    output = model.generate(**inputs, use_audio_in_video=True, return_audio=True)
     text = processor.batch_decode(output[0], skip_special_tokens=True, clean_up_tokenization_spaces=False)
     audio = output[2]
     return text, audio
 
 
-
-
-audio_path = "https://qianwen-res.oss-cn-beijing.aliyuncs.com/Qwen2-Audio/audio/guess_age_gender.wav"
+video_path = "https://qianwen-res.oss-cn-beijing.aliyuncs.com/Qwen2.5-Omni/draw.mp4"
 system_prompt = "You are Qwen, a virtual human developed by the Qwen Team, Alibaba Group, capable of perceiving auditory and visual inputs, as well as generating text and speech."
-
 
 torch.cuda.reset_peak_memory_stats()
 start = time.time()
-response, audio  = audio_inference(audio_path, prompt=None, sys_prompt=system_prompt)
+response, audio  = video_inference(video_path, prompt=None, sys_prompt=system_prompt)
 end = time.time()
 peak_memory = torch.cuda.max_memory_allocated()
 
-audio_file_path = "./results/output_audio_gptq.wav"
+audio_file_path = "./output_audio_gptq.wav"
 sf.write(
     audio_file_path,
     audio.reshape(-1).detach().cpu().numpy(),

@@ -1,18 +1,34 @@
 import torch
 import time
+import sys
+import importlib.util
 import soundfile as sf
 
-# pip install autoawq
 from awq.models.base import BaseAWQForCausalLM
 from transformers import AutoProcessor
 from transformers import Qwen2_5OmniProcessor
 from qwen_omni_utils import process_mm_info
 
-
 from modeling_qwen2_5_omni_low_VRAM_mode import (
     Qwen2_5OmniDecoderLayer
 )
 from modeling_qwen2_5_omni_low_VRAM_mode import Qwen2_5OmniForConditionalGeneration
+
+def replace_transformers_module():
+    original_mod_name = 'transformers.models.qwen2_5_omni.modeling_qwen2_5_omni'
+    
+    new_mod_path = 'modeling_qwen2_5_omni_low_VRAM_mode.py'
+
+    if original_mod_name in sys.modules:
+        del sys.modules[original_mod_name]
+
+    spec = importlib.util.spec_from_file_location(original_mod_name, new_mod_path)
+    new_mod = importlib.util.module_from_spec(spec)
+    spec.loader.exec_module(new_mod)
+
+    sys.modules[original_mod_name] = new_mod
+
+replace_transformers_module()
 
 class Qwen2_5_OmniAWQForConditionalGeneration(BaseAWQForCausalLM):
     layer_type = "Qwen2_5OmniDecoderLayer"
@@ -91,13 +107,6 @@ class Qwen2_5_OmniAWQForConditionalGeneration(BaseAWQForCausalLM):
 
         return layers
 
-
-
-
-
-USE_AUDIO_IN_VIDEO = False
-
-
 device_map = {
     "thinker.model": "cuda", 
     "thinker.lm_head": "cuda", 
@@ -118,15 +127,12 @@ model = Qwen2_5_OmniAWQForConditionalGeneration.from_quantized(
                                             attn_implementation="flash_attention_2"
                                         )
 
-processor = AutoProcessor.from_pretrained(model_path)
-
 spk_path = model_path + '/spk_dict.pt'
 model.model.load_speakers(spk_path)
 
 model.model.thinker.model.embed_tokens = model.model.thinker.model.embed_tokens.to(device)
 model.model.thinker.visual = model.model.thinker.visual.to(device)
 model.model.thinker.audio_tower = model.model.thinker.audio_tower.to(device)
-
 model.model.thinker.visual.rotary_pos_emb = model.model.thinker.visual.rotary_pos_emb.to(device)
 model.model.thinker.model.rotary_emb = model.model.thinker.model.rotary_emb.to(device)
 
@@ -136,42 +142,39 @@ for layer in model.model.thinker.model.layers:
 
 processor = Qwen2_5OmniProcessor.from_pretrained(model_path)
 
-def audio_inference(audio_path, prompt, sys_prompt):
+def video_inference(video_path, prompt, sys_prompt):
     messages = [
         {"role": "system", "content": [
                 {"type": "text", "text": sys_prompt},
             ]},
         {"role": "user", "content": [
-                {"type": "audio", "audio": audio_path},
+                {"type": "video", "video": video_path},
             ]
         },
     ]
     text = processor.apply_chat_template(messages, tokenize=False, add_generation_prompt=True)
 
-    audios, images, videos = process_mm_info(messages, use_audio_in_video=False)
+    audios, images, videos = process_mm_info(messages, use_audio_in_video=True)
     inputs = processor(text=text, audio=audios, images=images, videos=videos, return_tensors="pt", padding=True)
     inputs = inputs.to('cuda')
     
 
-    output = model.generate(**inputs, use_audio_in_video=False, return_audio=True)
+    output = model.generate(**inputs, use_audio_in_video=True, return_audio=True)
     text = processor.batch_decode(output[0], skip_special_tokens=True, clean_up_tokenization_spaces=False)
     audio = output[2]
     return text, audio
 
 
-
-
-audio_path = "https://qianwen-res.oss-cn-beijing.aliyuncs.com/Qwen2-Audio/audio/guess_age_gender.wav"
+video_path = "https://qianwen-res.oss-cn-beijing.aliyuncs.com/Qwen2.5-Omni/draw.mp4"
 system_prompt = "You are Qwen, a virtual human developed by the Qwen Team, Alibaba Group, capable of perceiving auditory and visual inputs, as well as generating text and speech."
-
 
 torch.cuda.reset_peak_memory_stats()
 start = time.time()
-response, audio  = audio_inference(audio_path, prompt=None, sys_prompt=system_prompt)
+response, audio  = video_inference(video_path, prompt=None, sys_prompt=system_prompt)
 end = time.time()
 peak_memory = torch.cuda.max_memory_allocated()
 
-audio_file_path = "./results/output_audio_awq.wav"
+audio_file_path = "./output_audio_awq.wav"
 sf.write(
     audio_file_path,
     audio.reshape(-1).detach().cpu().numpy(),
