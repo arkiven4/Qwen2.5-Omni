@@ -8,6 +8,7 @@ from awq.models.base import BaseAWQForCausalLM
 from transformers import AutoProcessor
 from transformers import Qwen2_5OmniProcessor
 from qwen_omni_utils import process_mm_info
+from huggingface_hub import hf_hub_download
 
 from modeling_qwen2_5_omni_low_VRAM_mode import (
     Qwen2_5OmniDecoderLayer
