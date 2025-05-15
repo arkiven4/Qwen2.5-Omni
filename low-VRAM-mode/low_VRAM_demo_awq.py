@@ -127,7 +127,9 @@ model = Qwen2_5_OmniAWQForConditionalGeneration.from_quantized(
                                             attn_implementation="flash_attention_2"
                                         )
 
-spk_path = model_path + '/spk_dict.pt'
+# spk_path = model_path + '/spk_dict.pt' # use this line if you load model from local
+spk_path = hf_hub_download(repo_id=model_path, filename='spk_dict.pt')
+
 model.model.load_speakers(spk_path)
 
 model.model.thinker.model.embed_tokens = model.model.thinker.model.embed_tokens.to(device)
