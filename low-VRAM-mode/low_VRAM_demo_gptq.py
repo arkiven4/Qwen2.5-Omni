@@ -7,6 +7,7 @@ from gptqmodel import GPTQModel
 from gptqmodel.models.base import BaseGPTQModel
 from gptqmodel.models.auto import MODEL_MAP
 from gptqmodel.models._const import CPU, SUPPORTED_MODELS
+from huggingface_hub import snapshot_download
 
 from qwen_omni_utils import process_mm_info
 from typing import Any, Dict
@@ -16,6 +17,7 @@ import time
 import soundfile as sf
 
 model_path = "Qwen/Qwen2.5-Omni-7B-GPTQ-Int4"
+model_path = snapshot_download(repo_id=model_path) # if you use local model file, delete this line
 
 class Qwen25OmniThinkerGPTQ(BaseGPTQModel):
     loader = Qwen2_5OmniForConditionalGeneration
