@@ -23,6 +23,7 @@ We release **Qwen2.5-Omni**, the new flagship end-to-end multimodal model in the
 
 
 ## News
+* 2025.05.16: We release 4-bit quantized Qwen2.5-Omni-7B (GPTQ-Int4/AWQ) models that maintain comparable performance to the original version on multimodal evaluations while reducing GPU VRAM consumption by over 50%+. See [GPTQ-Int4 and AWQ Usage](#gptq-int4-and-awq-usage) for details, and models can be obtained from Hugging Face ([GPTQ-Int4](https://huggingface.co/Qwen/Qwen2.5-Omni-7B-GPTQ-Int4)|[AWQ](https://huggingface.co/Qwen/Qwen2.5-Omni-7B-AWQ)) and ModelScope ([GPTQ-Int4](https://modelscope.cn/models/Qwen/Qwen2.5-Omni-7B-GPTQ-Int4)|[AWQ](https://modelscope.cn/models/Qwen/Qwen2.5-Omni-7B-AWQ))
 * 2025.05.13: [MNN Chat App](https://github.com/alibaba/MNN/blob/master/apps/Android/MnnLlmChat/README.md#releases) support Qwen2.5-Omni now, let's experience Qwen2.5-Omni on the edge devices! Please refer to [Deployment with MNN](#deployment-with-mnn) for information about memory consumption and inference speed benchmarks.
 * 2025.04.30: Exciting! We We have released Qwen2.5-Omni-3B to enable more platforms to run Qwen2.5-Omni. The model can be downloaded from [Hugging Face](https://huggingface.co/Qwen/Qwen2.5-Omni-3B). The [performance](#performance) of this model is updated, and please refer to [Minimum GPU memory requirements](#minimum-gpu-memory-requirements) for information about resource consumption. And for best experience, [transformers](#--transformers-usage) and [vllm](#deployment-with-vllm) code have update, you can pull the [official docker](#-docker) again to get them.
 * 2025.04.11: We release the new vllm version which support audio ouput now! Please experience it from source or our docker image.
@@ -42,6 +43,7 @@ We release **Qwen2.5-Omni**, the new flagship end-to-end multimodal model in the
 - [Quickstart](#quickstart)
   - [Transformers Usage](#--transformers-usage)
   - [ModelScope Usage](#-modelscope-usage)
+  - [GPTQ-Int4 and AWQ Usage](#gptq-int4-and-awq-usage)
   - [Usage Tips](#usage-tips)
   - [Cookbooks for More Usage Cases](#cookbooks-for-more-usage-cases)
   - [API inference](#api-inference)
@@ -913,6 +915,59 @@ print(text)
 ### 🤖 ModelScope Usage
 We strongly advise users especially those in mainland China to use ModelScope, `snapshot_download` can help you solve issues concerning downloading checkpoints.
 
+### GPTQ-Int4 and AWQ Usage
+
+To improve the Qwen2.5-Omni-7B's operability on devices with constrained GPU memory, we implemented 4-bit quantization of the Thinker's weights using GPTQ and AWQ, effectively reducing GPU VRAM usage. Ohter key optimizations include:
+* Enhanced the inference pipeline to load model weights on-demand for each module and offload them to CPU memory once inference is complete, preventing peak VRAM usage from becoming excessive.
+* Converted the code2wav module to support streaming inference, thereby avoiding the pre-allocation of excessive GPU memory.
+* Adjusted the ODE solver from a second-order (RK4) to a first-order (Euler) method to further decrease computational overhead.
+
+These improvements aim to ensure efficient performance of Qwen2.5-Omni across a range of hardware configurations, particularly those with lower GPU memory availability (RTX3080, 4080, 5070, etc). Currently, the relevant models and usage methods can be obtained from Hugging Face ([GPTQ-Int4](https://huggingface.co/Qwen/Qwen2.5-Omni-7B-GPTQ-Int4)|[AWQ](https://huggingface.co/Qwen/Qwen2.5-Omni-7B-AWQ)) and ModelScope ([GPTQ-Int4](https://modelscope.cn/models/Qwen/Qwen2.5-Omni-7B-GPTQ-Int4)|[AWQ](https://modelscope.cn/models/Qwen/Qwen2.5-Omni-7B-AWQ)). As below, we provide simple example to show how to use Qwen2.5-Omni-7B-GPTQ-Int4 with `gptqmodel` as follows:
+```
+pip uninstall transformers
+pip install git+https://github.com/huggingface/transformers@v4.51.3-Qwen2.5-Omni-preview
+pip install accelerate
+pip install gptqmodel==2.0.0
+pip install numpy==2.0.0
+
+git clone https://github.com/QwenLM/Qwen2.5-Omni.git
+
+cd Qwen2.5-Omni/low-VRAM-mode/
+
+CUDA_VISIBLE_DEVICES=0 python3 low_VRAM_demo_gptq.py
+```
+
+To use Qwen2.5-Omni-7B-AWQ with `autoawq` please run:
+```
+pip uninstall transformers
+pip install git+https://github.com/huggingface/transformers@v4.51.3-Qwen2.5-Omni-preview
+pip install accelerate
+pip install autoawq==0.2.9
+
+git clone https://github.com/QwenLM/Qwen2.5-Omni.git
+
+cd Qwen2.5-Omni/low-VRAM-mode/
+
+CUDA_VISIBLE_DEVICES=0 python3 low_VRAM_demo_awq.py
+```
+
+The following two tables present a performance comparison and GPU memory consumption between Qwen2.5-Omni-7B-GPTQ-Int4/Qwen2.5-Omni-7B-AWQ and Qwen2.5-Omni-7B on specific evaluation benchmarks. The data demonstrates that the GPTQ-Int4/AWQ model maintains comparable performance while reducing GPU memory requirements by over 50%+, enabling a broader range of devices to run and experience the high-performance Qwen2.5-Omni-7B model. Notably, the GPTQ-Int4/AWQ variant exhibits slightly slower inference speeds compared to the native Qwen2.5-Omni-7B model due to quantization techniques and CPU offload mechanisms.
+
+| Evaluation Set | Task | Metrics | Qwen2.5-Omni-7B | Qwen2.5-Omni-7B-GPTQ-Int4 | Qwen2.5-Omni-7B-AWQ |
+|--------------|-----------| ------------- | ------------- | ------------------ |  ------------------ |
+| LibriSpeech test-other   | ASR                   | WER ⬇️      | 3.4   | 3.71  | 3.91  |
+| WenetSpeech test-net     | ASR                   | WER ⬇️      | 5.9   | 6.62  | 6.31  |
+| Seed-TTS test-hard       | TTS (Speaker: Chelsie)| WER ⬇️      | 8.7   | 10.3  | 8.88  |
+| MMLU-Pro                 | Text -> Text          | Accuracy ⬆️ | 47.0  | 43.76 | 45.66 |
+| OmniBench                | Speech -> Text        | Accuracy ⬆️ | 56.13 | 53.59 | 54.64 |
+| VideoMME                 | Multimodality -> Text | Accuracy ⬆️ | 72.4  | 68.0  | 72.0  |
+
+|Model | Precision | 15(s) Video | 30(s) Video | 60(s) Video |
+|--------------|-----------| ------------- | ------------- | ------------------ |
+| Qwen-Omni-7B | FP32      | 93.56 GB      | Not Recommend | Not Recommend      |
+| Qwen-Omni-7B | BF16      | 31.11 GB      | 41.85 GB      | 60.19 GB           |
+| Qwen-Omni-7B | GPTQ-Int4 | 11.64 GB      | 17.43 GB      | 29.51 GB           |
+| Qwen-Omni-7B | AWQ       | 11.77 GB      | 17.84 GB      | 30.31 GB           |
 
 ### Usage Tips
 
