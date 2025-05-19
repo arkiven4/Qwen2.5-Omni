@@ -1246,7 +1246,7 @@ pip install .
 pip install git+https://github.com/huggingface/transformers@v4.51.3-Qwen2.5-Omni-preview
 ```
 
-### Inference
+### Inference Local
 
 You can use vLLM to inference Qwen2.5-Omni locally, we provide example in [vLLM repo](https://github.com/fyabc/vllm/blob/qwen2_omni_public/examples/offline_inference/qwen2_5_omni/end2end.py) which can generate audio output:
 
@@ -1269,12 +1269,13 @@ python end2end.py --model Qwen/Qwen2.5-Omni-7B --prompt audio-in-video-v2 --enfo
 python end2end.py --model Qwen/Qwen2.5-Omni-7B --prompt audio-in-video-v2 --enforce-eager --do-wave --voice-type Chelsie --warmup-voice-type Chelsie --thinker-devices [0,1] --talker-devices [2] --code2wav-devices [3] --thinker-gpu-memory-utilization 0.9 --talker-gpu-memory-utilization 0.9 --output-dir output_wav
 ```
 
-Besides the above examples, you can also use vLLM serve through the following command, and vLLM serve for Qwen2.5-Omni only supports thinker now, meaning only text output is supported.
+### vLLM Serve usage
+You can also use vLLM serve through `pip install vllm>=0.8.5.post1`, and vLLM serve for Qwen2.5-Omni only supports thinker now, meaning only text output is supported. You can start vLLM servev through the following command:
 ```bash
 # for single GPU
-VLLM_USE_V1=0 vllm serve /path/to/Qwen2.5-Omni-7B/ --port 8000 --host 127.0.0.1 --dtype bfloat16
+vllm serve /path/to/Qwen2.5-Omni-7B/ --port 8000 --host 127.0.0.1 --dtype bfloat16
 # for multi GPUs (example in 4 GPUs)
-VLLM_USE_V1=0 vllm serve /path/to/Qwen2.5-Omni-7B/ --port 8000 --host 127.0.0.1 --dtype bfloat16 -tp 4
+vllm serve /path/to/Qwen2.5-Omni-7B/ --port 8000 --host 127.0.0.1 --dtype bfloat16 -tp 4
 ```
 Then you can use the chat API as below (via curl for example):
 ```bash

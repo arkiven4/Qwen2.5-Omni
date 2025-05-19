@@ -1270,12 +1270,14 @@ python end2end.py --model Qwen/Qwen2.5-Omni-7B --prompt audio-in-video-v2 --enfo
 python end2end.py --model Qwen/Qwen2.5-Omni-7B --prompt audio-in-video-v2 --enforce-eager --do-wave --voice-type Chelsie --warmup-voice-type Chelsie --thinker-devices [0,1] --talker-devices [2] --code2wav-devices [3] --thinker-gpu-memory-utilization 0.9 --talker-gpu-memory-utilization 0.9 --output-dir output_wav
 ```
 
-除了上述的示例之外，您可以通过以下命令通过vLLM来启动API服务，目前vLLM serve仅支持文本输出。
+### 使用vLLM serve
+
+您还可以通过`pip install vllm>=0.8.5.post1`来使用vLLM serve，目前vLLM serve仅支持文本输出。您可以通过以下命令通过vLLM来启动API服务：
 ```bash
 # for single GPU
-VLLM_USE_V1=0 vllm serve /path/to/Qwen2.5-Omni-7B/ --port 8000 --host 127.0.0.1 --dtype bfloat16
+vllm serve /path/to/Qwen2.5-Omni-7B/ --port 8000 --host 127.0.0.1 --dtype bfloat16
 # for multi GPUs (example in 4 GPUs)
-VLLM_USE_V1=0 vllm serve /path/to/Qwen2.5-Omni-7B/ --port 8000 --host 127.0.0.1 --dtype bfloat16 -tp 4
+vllm serve /path/to/Qwen2.5-Omni-7B/ --port 8000 --host 127.0.0.1 --dtype bfloat16 -tp 4
 ```
 然后您可以通过如下代码使用这个API(示例里是使用curl命令):
 ```bash
