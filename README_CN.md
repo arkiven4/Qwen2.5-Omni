@@ -709,10 +709,9 @@ Qwen2.5-Omni在包括图像，音频，音视频等各种模态下的表现都�
 
 ## 快速开始
 
-接下来，我们将提供如何在🤖 ModelScope和🤗 Transformers上使用 Qwen2.5-Omni. Qwen2.5-Omni的代码在Hugging Face transformers的最新版本中，我们建议您从源代码构建：
+接下来，我们将提供如何在🤖 ModelScope和🤗 Transformers上使用 Qwen2.5-Omni. Qwen2.5-Omni的代码在Hugging Face transformers的最新版本中，您可以直接通过下面的命令安装：
 ```
-pip uninstall transformers
-pip install git+https://github.com/huggingface/transformers@v4.51.3-Qwen2.5-Omni-preview
+pip install transformers==4.52.3
 pip install accelerate
 ```
 否则您可能会遇到以下错误：
@@ -922,8 +921,7 @@ print(text)
 
 这些提升主要目的是为了确保Qwen2.5-Omni可以运行在一些低显存设备上运行，例如RTX3080、4080、5070等。目前，相关的模型和使用方法可以从Hugging Face ([GPTQ-Int4](https://huggingface.co/Qwen/Qwen2.5-Omni-7B-GPTQ-Int4)|[AWQ](https://huggingface.co/Qwen/Qwen2.5-Omni-7B-AWQ)) 和 ModelScope ([GPTQ-Int4](https://modelscope.cn/models/Qwen/Qwen2.5-Omni-7B-GPTQ-Int4)|[AWQ](https://modelscope.cn/models/Qwen/Qwen2.5-Omni-7B-AWQ))上来获取。下面，我们提供一个简单的示例，以展示如何通过`gptqmodel`来使用Qwen2.5-Omni-7B-GPTQ-Int4模型：
 ```
-pip uninstall transformers
-pip install git+https://github.com/huggingface/transformers@v4.51.3-Qwen2.5-Omni-preview
+pip install transformers==4.52.3
 pip install accelerate
 pip install gptqmodel==2.0.0
 pip install numpy==2.0.0
@@ -937,8 +935,7 @@ CUDA_VISIBLE_DEVICES=0 python3 low_VRAM_demo_gptq.py
 
 要通过`autoawq`来使用Qwen2.5-Omni-7B-AWQ with，请执行:
 ```
-pip uninstall transformers
-pip install git+https://github.com/huggingface/transformers@v4.51.3-Qwen2.5-Omni-preview
+pip install transformers==4.52.3
 pip install accelerate
 pip install autoawq==0.2.9
 
@@ -1244,7 +1241,7 @@ pip install setuptools_scm torchdiffeq resampy x_transformers qwen-omni-utils ac
 pip install -r requirements/cuda.txt
 pip install --upgrade setuptools wheel
 pip install .
-pip install git+https://github.com/huggingface/transformers@v4.51.3-Qwen2.5-Omni-preview
+pip install transformers==4.52.3
 ```
 
 ### 本地离线推理

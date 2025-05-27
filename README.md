@@ -712,10 +712,9 @@ We conducted a comprehensive evaluation of Qwen2.5-Omni, which demonstrates stro
 
 Below, we provide simple examples to show how to use Qwen2.5-Omni with 🤖 ModelScope and 🤗 Transformers.
 
-The codes of Qwen2.5-Omni has been in the latest Hugging face transformers and we advise you to build from source with command:
+The codes of Qwen2.5-Omni has been in the latest Hugging face transformers and we advise you to install with command:
 ```
-pip uninstall transformers
-pip install git+https://github.com/huggingface/transformers@v4.51.3-Qwen2.5-Omni-preview
+pip install transformers==4.52.3
 pip install accelerate
 ```
 or you might encounter the following error:
@@ -924,8 +923,7 @@ To improve the Qwen2.5-Omni-7B's operability on devices with constrained GPU mem
 
 These improvements aim to ensure efficient performance of Qwen2.5-Omni across a range of hardware configurations, particularly those with lower GPU memory availability (RTX3080, 4080, 5070, etc). Currently, the relevant models and usage methods can be obtained from Hugging Face ([GPTQ-Int4](https://huggingface.co/Qwen/Qwen2.5-Omni-7B-GPTQ-Int4)|[AWQ](https://huggingface.co/Qwen/Qwen2.5-Omni-7B-AWQ)) and ModelScope ([GPTQ-Int4](https://modelscope.cn/models/Qwen/Qwen2.5-Omni-7B-GPTQ-Int4)|[AWQ](https://modelscope.cn/models/Qwen/Qwen2.5-Omni-7B-AWQ)). As below, we provide simple example to show how to use Qwen2.5-Omni-7B-GPTQ-Int4 with `gptqmodel` as follows:
 ```
-pip uninstall transformers
-pip install git+https://github.com/huggingface/transformers@v4.51.3-Qwen2.5-Omni-preview
+pip install transformers==4.52.3
 pip install accelerate
 pip install gptqmodel==2.0.0
 pip install numpy==2.0.0
@@ -939,8 +937,7 @@ CUDA_VISIBLE_DEVICES=0 python3 low_VRAM_demo_gptq.py
 
 To use Qwen2.5-Omni-7B-AWQ with `autoawq` please run:
 ```
-pip uninstall transformers
-pip install git+https://github.com/huggingface/transformers@v4.51.3-Qwen2.5-Omni-preview
+pip install transformers==4.52.3
 pip install accelerate
 pip install autoawq==0.2.9
 
@@ -1243,7 +1240,7 @@ pip install setuptools_scm torchdiffeq resampy x_transformers qwen-omni-utils ac
 pip install -r requirements/cuda.txt
 pip install --upgrade setuptools wheel
 pip install .
-pip install git+https://github.com/huggingface/transformers@v4.51.3-Qwen2.5-Omni-preview
+pip install transformers==4.52.3
 ```
 
 ### Inference Local
