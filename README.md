@@ -23,6 +23,7 @@ We release **Qwen2.5-Omni**, the new flagship end-to-end multimodal model in the
 
 
 ## News
+* 2025.06.12: Qwen2.5-Omni-7B ranked first among open source models in the spoken language understanding and reasoning benchmark [MMSU](https://arxiv.org/abs/2506.04779).
 * 2025.06.09: Congratulations to our open source Qwen2.5-Omni-7B for ranking first in the [MMAU](https://sakshi113.github.io/mmau_homepage/#leaderboard) leaderboard, and first in the [MMAR](https://github.com/ddlBoJack/MMAR) of open source models in the audio understanding and reasoning evaluation!
 * 2025.05.16: We release 4-bit quantized Qwen2.5-Omni-7B (GPTQ-Int4/AWQ) models that maintain comparable performance to the original version on multimodal evaluations while reducing GPU VRAM consumption by over 50%+. See [GPTQ-Int4 and AWQ Usage](#gptq-int4-and-awq-usage) for details, and models can be obtained from Hugging Face ([GPTQ-Int4](https://huggingface.co/Qwen/Qwen2.5-Omni-7B-GPTQ-Int4)|[AWQ](https://huggingface.co/Qwen/Qwen2.5-Omni-7B-AWQ)) and ModelScope ([GPTQ-Int4](https://modelscope.cn/models/Qwen/Qwen2.5-Omni-7B-GPTQ-Int4)|[AWQ](https://modelscope.cn/models/Qwen/Qwen2.5-Omni-7B-AWQ))
 * 2025.05.13: [MNN Chat App](https://github.com/alibaba/MNN/blob/master/apps/Android/MnnLlmChat/README.md#releases) support Qwen2.5-Omni now, let's experience Qwen2.5-Omni on the edge devices! Please refer to [Deployment with MNN](#deployment-with-mnn) for information about memory consumption and inference speed benchmarks.
