@@ -41,8 +41,8 @@ def process_audio_info(conversations: list[dict] | list[list[dict]], use_audio_i
                 continue
             for ele in message["content"]:
                 if ele["type"] == "audio":
-                    if "audio" in ele:
-                        path = ele["audio"]
+                    if "audio" in ele or "audio_url" in ele:
+                        path = ele.get("audio", ele.get("audio_url"))
                         audio_start = ele.get("audio_start", 0.0)
                         audio_end = ele.get("audio_end", None)
                         if isinstance(path, np.ndarray):
@@ -64,8 +64,8 @@ def process_audio_info(conversations: list[dict] | list[list[dict]], use_audio_i
                     else:
                         raise ValueError("Unknown audio {}".format(ele))
                 if use_audio_in_video and ele["type"] == "video":
-                    if "video" in ele:
-                        path = ele["video"]
+                    if "video" in ele or "video_url" in ele:
+                        path = ele.get("video", ele.get("video_url"))
                         audio_start = ele.get("video_start", 0.0)
                         audio_end = ele.get("video_end", None)
                         assert _check_if_video_has_audio(
