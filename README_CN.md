@@ -22,6 +22,7 @@
 </a>
 
 ## 新闻
+* 2025.06.12: Qwen2.5-Omni-7B在口语理解与推理测评榜单[MMSU](https://arxiv.org/abs/2506.04779)中获得开源模型第一！
 * 2025.06.09: 恭喜Qwen2.5-Omni-7B在音频理解与推理评测榜单[MMAU](https://sakshi113.github.io/mmau_homepage/#leaderboard)中位列第一，在[MMAR](https://github.com/ddlBoJack/MMAR)评测中位列开源模型第一！
 * 2025.05.16: 我们发布了4-bit量化的Qwen2.5-Omni-7B（GPTQ-Int4/AWQ），它与原始版本保持了相似的性能，同时减少了高达50%+的GPU显存消耗。有关详细信息，请参阅[GPTQ-Int4和AWQ使用](#gptq-int4-和-awq-使用方法)，模型可以从 Hugging Face ([GPTQ-Int4](https://huggingface.co/Qwen/Qwen2.5-Omni-7B-GPTQ-Int4)|[AWQ](https://huggingface.co/Qwen/Qwen2.5-Omni-7B-AWQ)) 和 ModelScope ([GPTQ-Int4](https://modelscope.cn/models/Qwen/Qwen2.5-Omni-7B-GPTQ-Int4)|[AWQ](https://modelscope.cn/models/Qwen/Qwen2.5-Omni-7B-AWQ)) 中获取。
 * 2025.05.13: [MNN Chat App](https://github.com/alibaba/MNN/blob/master/apps/Android/MnnLlmChat/README.md#releases) 目前已经支持Qwen2.5-Omni了, 让我们在端侧设备中体验Qwen2.5-Omni吧！请访问[使用MNN部署](#使用mnn部署 )来获取有关模型内存消耗和推理速度的基准测试的信息。
