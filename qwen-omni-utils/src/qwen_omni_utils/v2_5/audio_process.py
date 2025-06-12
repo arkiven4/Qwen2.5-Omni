@@ -63,7 +63,7 @@ def process_audio_info(conversations: list[dict] | list[list[dict]], use_audio_i
                             data = path
                     else:
                         raise ValueError("Unknown audio {}".format(ele))
-                if use_audio_in_video and ele["type"] == "video":
+                elif use_audio_in_video and ele["type"] == "video":
                     if "video" in ele or "video_url" in ele:
                         path = ele.get("video", ele.get("video_url"))
                         audio_start = ele.get("video_start", 0.0)
@@ -86,7 +86,7 @@ def process_audio_info(conversations: list[dict] | list[list[dict]], use_audio_i
                         data,
                         sr=SAMPLE_RATE,
                         offset=audio_start,
-                        duration=audio_end - audio_start if audio_end is not None else None,
+                        duration=(audio_end - audio_start) if audio_end is not None else None,
                     )[0]
                 )
     if len(audios) == 0:
