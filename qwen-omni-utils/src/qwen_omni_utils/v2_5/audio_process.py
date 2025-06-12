@@ -7,6 +7,7 @@ import librosa
 import numpy as np
 
 
+SAMPLE_RATE=16000
 def _check_if_video_has_audio(video_path):
     container = av.open(video_path)
     audio_streams = [stream for stream in container.streams if stream.type == "audio"]
@@ -16,6 +17,21 @@ def _check_if_video_has_audio(video_path):
 
 
 def process_audio_info(conversations: list[dict] | list[list[dict]], use_audio_in_video: bool):
+    """
+    Read and process audio info
+
+    Support dict keys:
+
+    type = audio
+    - audio
+    - audio_start
+    - audio_end
+
+    type = video
+    - video
+    - video_start
+    - video_end
+    """
     audios = []
     if isinstance(conversations[0], dict):
         conversations = [conversations]
@@ -27,36 +43,50 @@ def process_audio_info(conversations: list[dict] | list[list[dict]], use_audio_i
                 if ele["type"] == "audio":
                     if "audio" in ele:
                         path = ele["audio"]
+                        audio_start = ele.get("audio_start", 0.0)
+                        audio_end = ele.get("audio_end", None)
                         if isinstance(path, np.ndarray):
                             if path.ndim > 1:
                                 raise ValueError("Support only mono audio")
-                            audios.append(path)
+                            audios.append(
+                                path[int(SAMPLE_RATE * audio_start) : None if audio_end is None else int(SAMPLE_RATE * audio_end)]
+                            )
+                            continue
                         elif path.startswith("data:audio"):
                             _, base64_data = path.split("base64,", 1)
-                            data = base64.b64decode(base64_data)
-                            audios.append(librosa.load(BytesIO(data), sr=16000)[0])
+                            data = BytesIO(base64.b64decode(base64_data))
                         elif path.startswith("http://") or path.startswith("https://"):
-                            audios.append(librosa.load(audioread.ffdec.FFmpegAudioFile(path), sr=16000)[0])
+                            data = audioread.ffdec.FFmpegAudioFile(path)
                         elif path.startswith("file://"):
-                            audios.append(librosa.load(path[len("file://") :], sr=16000)[0])
+                            data = path[len("file://") :]
                         else:
-                            audios.append(librosa.load(path, sr=16000)[0])
+                            data = path
                     else:
                         raise ValueError("Unknown audio {}".format(ele))
                 if use_audio_in_video and ele["type"] == "video":
                     if "video" in ele:
                         path = ele["video"]
+                        audio_start = ele.get("video_start", 0.0)
+                        audio_end = ele.get("video_end", None)
                         assert _check_if_video_has_audio(
                             path
                         ), "Video must has audio track when use_audio_in_video=True"
                         if path.startswith("http://") or path.startswith("https://"):
-                            audios.append(librosa.load(audioread.ffdec.FFmpegAudioFile(path), sr=16000)[0])
+                            data = audioread.ffdec.FFmpegAudioFile(path)
                         elif path.startswith("file://"):
-                            audios.append(librosa.load(path[len("file://") :], sr=16000)[0])
+                            data = path[len("file://") :]
                         else:
-                            audios.append(librosa.load(path, sr=16000)[0])
+                            data = path
                     else:
                         raise ValueError("Unknown video {}".format(ele))
+                audios.append(
+                    librosa.load(
+                        data,
+                        sr=SAMPLE_RATE,
+                        offset=audio_start,
+                        duration=audio_end - audio_start if audio_end is not None else None,
+                    )[0]
+                )
     if len(audios) == 0:
         audios = None
     return audios
