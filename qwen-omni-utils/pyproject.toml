@@ -1,6 +1,6 @@
 [project]
 name = "qwen-omni-utils"
-version = "0.0.4"
+version = "0.0.5"
 description = "Qwen Omni Language Model Utils - PyTorch"
 authors = [
     { name = "Qwen Team", email = "lvyuanjun.lyj@alibaba-inc.com" },
