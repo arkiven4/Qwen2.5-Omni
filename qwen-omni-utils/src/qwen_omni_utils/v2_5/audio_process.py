@@ -79,6 +79,8 @@ def process_audio_info(conversations: list[dict] | list[list[dict]], use_audio_i
                             data = path
                     else:
                         raise ValueError("Unknown video {}".format(ele))
+                else:
+                    continue
                 audios.append(
                     librosa.load(
                         data,
