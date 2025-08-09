@@ -1,2 +1,2 @@
 !pip install flash-attn --no-build-isolation
-CUDA_VISIBLE_DEVICES=1 python try_train.py
+CUDA_VISIBLE_DEVICES=0,1 python try_train.py

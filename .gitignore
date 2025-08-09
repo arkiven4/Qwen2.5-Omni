@@ -1,2 +1,5 @@
 outputs
 note
+datas
+*.pyc
+*.code-workspace
