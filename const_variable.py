@@ -1,6 +1,10 @@
 from openai import OpenAI
+from dotenv import load_dotenv
+import os
 
-clientOpenAI = OpenAI(api_key="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")
+load_dotenv()
+
+clientOpenAI = OpenAI(api_key=os.getenv("OPENAI_API_KEY"))
 
 columns_imagefeat = ['Modality',
        'DistanceSourceToDetector', 'FieldOfViewDimensions',

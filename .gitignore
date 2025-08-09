@@ -3,3 +3,4 @@ note
 datas
 *.pyc
 *.code-workspace
+.env
