@@ -11,9 +11,15 @@ warnings.filterwarnings("ignore", message="System prompt modified, audio output 
 logging.getLogger().addFilter(SuppressQwenWarning())
 
 def get_OmniModel(model_path="Qwen/Qwen2.5-Omni-3B", adapter_path=None, processor_path="Qwen/Qwen2.5-Omni-3B", 
-                  use_flash_attention=True, only_processor=False, quantize_4bit=True, 
+                  padding_side=None, use_flash_attention=True, only_processor=False, quantize_4bit=True, 
                   offload_folder=None, set_eval=True):
-    processor = Qwen2_5OmniProcessor.from_pretrained(processor_path)
+    
+    if padding_side == "left":
+        print("Loading Processsor.... Using Left padding Side")
+        processor = Qwen2_5OmniProcessor.from_pretrained(processor_path, padding_side="left")
+    else:
+        processor = Qwen2_5OmniProcessor.from_pretrained(processor_path)
+
     if only_processor:
         return processor
 

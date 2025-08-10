@@ -1,8 +1,8 @@
 import pickle, os, re, random, torch
-from peft import get_peft_model, LoraConfig, TaskType
+from peft import get_peft_model, LoraConfig, TaskType, get_peft_model_state_dict
 from qwen_omni_utils import process_mm_info
 from trl import SFTTrainer, SFTConfig
-from qwen_mywrapper import get_OmniModel
+from my_qwenwrapper import get_OmniModel
 from sentence_transformers import SentenceTransformer, util
 
 import commons
@@ -29,8 +29,9 @@ pos_embeds = embedder.encode(const_variable.positive_templates, convert_to_tenso
 neg_embeds = embedder.encode(const_variable.negative_templates, convert_to_tensor=True)
 
 def get_label_fromprompt(text, threshold=0.7):
-    match = re.search(r"## 🧠 Overview\s*(.*?)\s*(##|$)", text, re.DOTALL)
-    sentence = match.group(1).strip() if match else None
+    #match = re.search(r"## 🧠 Overview\s*(.*?)\s*(##|$)", text, re.DOTALL)
+    #sentence = match.group(1).strip() if match else None
+    sentence = [line.strip() for line in text.split("\n") if line.strip()][-1]
 
     if sentence is None:
         return random.randint(2, 4)
@@ -73,6 +74,7 @@ def collate_fn(conversations):
     for audio_token_id in audio_tokens:
         labels[labels == audio_token_id] = -100  # Mask image token IDs in labels
 
+    batch['use_audio_in_video'] = False
     batch["labels"] = labels
     batch["tb_labels"] = tb_labels
     return batch
@@ -99,16 +101,15 @@ model.gradient_checkpointing_enable()
 model.enable_input_require_grads()
 peft_model = get_peft_model(model, peft_config)
 peft_model.print_trainable_parameters()
-# peft.get_peft_model_state_dict(model) -> Check affect vision text audio and thinker, janagn2 cuman thinker aj
 model = peft_model.unload()
 del peft_model
 
 ##########################################################################################################
 commons.pretty_status("📦 Loading Dataset...")
-with open('datas/instruct.pkl.train', 'rb') as f:
+with open('datas/instruct_noreasoning.pkl.train', 'rb') as f:
     train_instruct = commons.load_image_PIL(pickle.load(f))
 
-with open('datas/instruct.pkl.dev', 'rb') as f:
+with open('datas/instruct_noreasoning.pkl.dev', 'rb') as f:
     dev_instruct = commons.load_image_PIL(pickle.load(f))
 
 train_dataset = QwenOmniFinetuneDataset(train_instruct, processor, use_audio_in_video=False)
@@ -118,8 +119,8 @@ print(train_dataset[0])
 ##########################################################################################################
 commons.pretty_status("🚀 Start Training!")
 training_args = SFTConfig(
-    output_dir="outputs/qwen25omni-3b-instructMedic-reasonllm-notallpresent-trl-sft-sentencetrans",  # Directory to save the model
-    logging_dir='outputs/qwen25omni-3b-instructMedic-reasonllm-notallpresent-trl-sft-sentencetrans/logs',
+    output_dir="outputs/qwen25omni3b-noreason-notallpresent-trl-sft-sentencetrans",  # Directory to save the model
+    logging_dir='outputs/qwen25omni3b-noreason-notallpresent-trl-sft-sentencetrans/logs',
     num_train_epochs=3,  # Number of training epochs
     per_device_train_batch_size=1,  # Batch size for training
     per_device_eval_batch_size=1,  # Batch size for evaluation
@@ -224,7 +225,7 @@ class CustomSFTTrainer(SFTTrainer):
         if mode == "train":
             acc_penalty = (1.0 - acc)
             sens_penalty = (1.0 - sensitivity)
-            loss = loss + (1.0 * acc_penalty) + (1.0 * sens_penalty)
+            loss = loss + (1.5 * acc_penalty) + (1.5 * sens_penalty)
         return (loss, outputs) if return_outputs else loss
 
 

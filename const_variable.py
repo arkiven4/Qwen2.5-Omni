@@ -18,46 +18,46 @@ columns_soundfeat = ['sex', 'cough_duration', 'cough_productive', 'haemoptysis',
 
 prompt_templates = {
     ("audio",): [
-        "Based on the provided cough audio, could this be tuberculosis?",
-        "Listen to this cough sound, is it consistent with tuberculosis?",
-        "Does the cough audio suggest the presence of tuberculosis?",
-        "Analyze the following cough sound. Is this indicative of TB?"
+        "Based on the provided cough audio, is this case Positive Tuberculosis or Negative Tuberculosis?",
+        "Listen to this cough sound, is it Positive Tuberculosis or Negative Tuberculosis?",
+        "Does the cough audio indicate Positive Tuberculosis or Negative Tuberculosis?",
+        "Analyze the following cough sound. Is this case Positive Tuberculosis or Negative Tuberculosis?"
     ],
     ("xray",): [
-        "Examine this chest x-ray. Are there signs suggestive of tuberculosis?",
-        "Does the provided x-ray image show evidence of tuberculosis?",
-        "Analyze the radiographic scan, could this be tuberculosis?",
-        "From this x-ray image, is there any indication of pulmonary TB?"
+        "Examine this chest x-ray, is this case Positive Tuberculosis or Negative Tuberculosis?",
+        "Does the provided x-ray image show Positive Tuberculosis or Negative Tuberculosis?",
+        "Analyze the radiographic scan, is it Positive Tuberculosis or Negative Tuberculosis?",
+        "From this x-ray image, is this case Positive Tuberculosis or Negative Tuberculosis?"
     ],
     ("symptoms",): [
-        "Given these symptoms, is tuberculosis a likely diagnosis?",
-        "Do the presented symptoms match with tuberculosis?",
-        "Analyze the following symptoms, could this be TB?",
-        "Based on the symptom description, is this tuberculosis?"
+        "Given these symptoms, is this case Positive Tuberculosis or Negative Tuberculosis?",
+        "Do the presented symptoms indicate Positive Tuberculosis or Negative Tuberculosis?",
+        "Analyze the following symptoms, is it Positive Tuberculosis or Negative Tuberculosis?",
+        "Based on the symptom description, is this case Positive Tuberculosis or Negative Tuberculosis?"
     ],
     ("audio", "xray"): [
-        "Based on the chest x-ray and cough audio, is this tuberculosis?",
-        "Examine the x-ray and cough sound, could this indicate TB?",
-        "Given the radiograph and cough recording, is tuberculosis likely?",
-        "Using both the x-ray and cough audio, does this point to TB?"
+        "Based on the chest x-ray and cough audio, is this case Positive Tuberculosis or Negative Tuberculosis?",
+        "Examine the x-ray and cough sound, is it Positive Tuberculosis or Negative Tuberculosis?",
+        "Given the radiograph and cough recording, is this case Positive Tuberculosis or Negative Tuberculosis?",
+        "Using both the x-ray and cough audio, is this Positive Tuberculosis or Negative Tuberculosis?"
     ],
     ("audio", "symptoms"): [
-        "Given the cough audio and symptoms, is tuberculosis a possible diagnosis?",
-        "Analyze the patient symptoms and cough, could this be TB?",
-        "Do the symptoms and cough sound suggest tuberculosis?",
-        "Using both the cough sound and symptoms, is this tuberculosis?"
+        "Given the cough audio and symptoms, is this case Positive Tuberculosis or Negative Tuberculosis?",
+        "Analyze the patient symptoms and cough, is it Positive Tuberculosis or Negative Tuberculosis?",
+        "Do the symptoms and cough sound indicate Positive Tuberculosis or Negative Tuberculosis?",
+        "Using both the cough sound and symptoms, is this case Positive Tuberculosis or Negative Tuberculosis?"
     ],
     ("xray", "symptoms"): [
-        "From the x-ray and symptoms, is this tuberculosis?",
-        "Analyze the x-ray and clinical symptoms, do they indicate TB?",
-        "Given the chest scan and symptoms, could this be pulmonary TB?",
-        "What the likelihood this is tuberculosis based on the x-ray and symptoms?"
+        "From the x-ray and symptoms, is this case Positive Tuberculosis or Negative Tuberculosis?",
+        "Analyze the x-ray and clinical symptoms, is it Positive Tuberculosis or Negative Tuberculosis?",
+        "Given the chest scan and symptoms, is this Positive Tuberculosis or Negative Tuberculosis?",
+        "What is the diagnosis based on the x-ray and symptoms, Positive Tuberculosis or Negative Tuberculosis?"
     ],
     ("audio", "xray", "symptoms"): [
-        "Based on the x-ray, cough audio, and symptoms, is this tuberculosis?",
-        "Evaluate the x-ray, cough sound, and symptoms, could this be TB?",
-        "Given the combined evidence, does this case represent tuberculosis?",
-        "Considering all inputs image, sound, and symptoms, is this TB?"
+        "Based on the x-ray, cough audio, and symptoms, is this case Positive Tuberculosis or Negative Tuberculosis?",
+        "Evaluate the x-ray, cough sound, and symptoms, is it Positive Tuberculosis or Negative Tuberculosis?",
+        "Given the combined evidence, is this case Positive Tuberculosis or Negative Tuberculosis?",
+        "Considering all inputs (image, sound, and symptoms), is this Positive Tuberculosis or Negative Tuberculosis?"
     ],
 }
 
@@ -82,3 +82,10 @@ negative_templates = [
     "Tuberculosis is not the likely cause in this case.",
     "the patient probably does not have Tuberculosis."
 ]
+
+system_prompt = (
+    "A conversation between User and Advanced medical assistant specialized in analyzing and diagnosing clinical conditions. and the Assistant determines whether the case is Positive or Negative. The assistant "
+    "first thinks about the reasoning process in the mind and then provides the user with the answer. The reasoning "
+    "process and answer are enclosed within <think> </think> and <answer> </answer> tags, respectively, i.e., "
+    "<think> reasoning process here </think><answer> answer here </answer>"
+)

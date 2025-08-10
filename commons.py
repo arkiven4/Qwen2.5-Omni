@@ -6,6 +6,8 @@ import const_variable
 import torch
 from transformers import StoppingCriteria, StoppingCriteriaList
 import soundfile as sf
+import copy
+from qwen_omni_utils import process_mm_info
 
 random.seed(42)
 
@@ -96,6 +98,46 @@ def unique_modalities_generator(prompt_templates):
     except:
         return None, None
 
+def grpo_build_datasets(instruct, processor):
+    datasets = []
+    for sample in tqdm(instruct):
+        image_found = False
+        audio_found = False
+        conversation  = copy.deepcopy(sample["messages"])
+        for ele in conversation[1]['content']:
+            if ele["type"] == "audio":
+                if "audio" in ele or "audio_url" in ele:
+                    path = ele.get("audio", ele.get("audio_url"))
+                    start_sec, end_sec = random_3sec_segment(path, segment_duration=3.0)
+                    ele["audio_start"] = float(start_sec)
+                    ele["audio_end"] = float(end_sec)
+                    audio_found = True
+            if ele["type"] == "image":
+                if "image" in ele or "audio_url" in ele:
+                    image_found = True
+
+        solution = conversation[2]['content'][0]['text']
+        del conversation[2]
+        
+        prompt = processor.apply_chat_template(conversation, add_generation_prompt=True)
+        #audios, images, videos = process_mm_info(conversation, use_audio_in_video=False)
+        current_object = {
+            "prompt": prompt,
+            "solution": solution,
+        }
+        if images != None:
+            current_object['image'] = images[0]   
+        if audios != None:
+            current_object['audio'] = audios[0]
+
+        if image_found == False:
+            continue
+        if audio_found == False:
+            continue 
+        datasets.append({'messages' : current_object})
+
+    return datasets
+
 def get_prefix(modalities):
     parts = []
     if "symptoms" in modalities:
@@ -118,8 +160,8 @@ def get_prefix(modalities):
 def generate_tb_response(modalities, llm_analyze_symptoms, llm_analyze_image, positive=True):
     llm_analyze_image = llm_analyze_image[2:]
     prefix = get_prefix(modalities) + ", Let me Analyze your regrading your questions.\n\n"
-    templates = const_variable.positive_templates if positive else const_variable.negative_templates
-    sentence_tb = random.choice(templates)
+    #templates = const_variable.positive_templates if positive else const_variable.negative_templates
+    sentence_tb = "Positive Tuberculosis" if positive else "Negative Tuberculosis" #random.choice(templates)
 
     missing_notes = []
     if "audio" not in modalities:
@@ -134,9 +176,9 @@ def generate_tb_response(modalities, llm_analyze_symptoms, llm_analyze_image, po
         review_message = review_message + "\n".join(missing_notes) + "\n\n"
     else:
         review_message = "*   All modalities are present.\n"  # or "All modalities are present." if you prefer
-    review_message += "This is a preliminary interpretation based on given data and does not replace a comprehensive clinical evaluation.. A definitive diagnosis requires a additional clinical evaluation, including the physical examination findings, Cough Sound, Auscultation Sound, and imaging studies.\n"
+    review_message += "This is a preliminary interpretation based on given data and does not replace a comprehensive clinical evaluation. A definitive diagnosis requires a additional clinical evaluation, including the physical examination findings, Cough Sound, Auscultation Sound, and imaging studies.\n"
 
-    overview_message = f"## 🧠 Overview\n{sentence_tb}\n\n"
+    #overview_message = f"## 🧠 Overview\n{sentence_tb}\n\n"
     orbservation_message = f"## 📋 Observations\n"
     if "symptoms" in modalities:
         orbservation_message += f"**Symptoms:**\n*   {llm_analyze_symptoms}\n\n"
@@ -144,8 +186,8 @@ def generate_tb_response(modalities, llm_analyze_symptoms, llm_analyze_image, po
         orbservation_message += f"**Chest X-ray:**\n{llm_analyze_image}\n\n"
     if "audio" in modalities:
         orbservation_message += f"**Audio:**\n*   Will be Implemented Soon"
-
-    return f"{prefix}{review_message}{overview_message}{orbservation_message}"
+    orbservation_message = orbservation_message.rstrip("\n")
+    return f"<think>{prefix}{review_message}{orbservation_message}</think>\n\n<answer>{sentence_tb}</answer>"
 
 class StopOnMultiToken(StoppingCriteria):
     def __init__(self, stop_token_ids):
