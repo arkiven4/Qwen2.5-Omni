@@ -8,14 +8,17 @@ from transformers import StoppingCriteria, StoppingCriteriaList
 import soundfile as sf
 import copy
 from qwen_omni_utils import process_mm_info
+import io
 
 random.seed(42)
+
 
 def pretty_status(message):
     line = "=" * (len(message) + 4)
     print(f"\n{line}")
     print(f"| {message} |")
     print(f"{line}\n")
+
 
 def crop_and_convertNP(path_file):
     array = np.load(path_file)
@@ -37,6 +40,7 @@ def crop_and_convertNP(path_file):
     array_PIL = Image.fromarray(cropped_array)
     return array_PIL
 
+
 def load_image_PIL(loaded_object):
     for obj in tqdm(loaded_object):
         for message in obj.get("messages", []):
@@ -44,6 +48,7 @@ def load_image_PIL(loaded_object):
                 if isinstance(content, dict) and "image" in content:
                     content["image"] = crop_and_convertNP(content["image"])
     return loaded_object
+
 
 def crop_and_convert(path_file):
     array = np.load(path_file)
@@ -65,6 +70,7 @@ def crop_and_convert(path_file):
     array_PIL = Image.fromarray(cropped_array)
     return array_PIL
 
+
 def random_3sec_segment(audio_path, segment_duration=3.0):
     info = sf.info(audio_path)
     total_duration = info.frames / info.samplerate
@@ -76,11 +82,12 @@ def random_3sec_segment(audio_path, segment_duration=3.0):
     end_sec = start_sec + segment_duration
     return start_sec, end_sec
 
-def unique_modalities_generator(prompt_templates):
+
+def unique_modalities_generator(prompt_templates, path_file_audio):
     while True:
         modalities = []
-        if random.random() < 0.5:
-            modalities.append("audio")  
+        if random.random() < 0.5 and path_file_audio != 'Unknown':
+            modalities.append("audio")
         if random.random() < 0.5:
             modalities.append("xray")
         if random.random() < 0.5:
@@ -98,17 +105,28 @@ def unique_modalities_generator(prompt_templates):
     except:
         return None, None
 
+
+def numpy_to_wav_bytes(audio_array: np.ndarray, sr: int) -> bytes:
+    """
+    Convert a NumPy array to WAV bytes in memory.
+    """
+    buf = io.BytesIO()
+    sf.write(buf, audio_array, sr, format='WAV')
+    return buf.getvalue()
+
+
 def grpo_build_datasets(instruct, processor):
     datasets = []
     for sample in tqdm(instruct):
         image_found = False
         audio_found = False
-        conversation  = copy.deepcopy(sample["messages"])
+        conversation = copy.deepcopy(sample["messages"])
         for ele in conversation[1]['content']:
             if ele["type"] == "audio":
                 if "audio" in ele or "audio_url" in ele:
                     path = ele.get("audio", ele.get("audio_url"))
-                    start_sec, end_sec = random_3sec_segment(path, segment_duration=3.0)
+                    start_sec, end_sec = random_3sec_segment(
+                        path, segment_duration=3.0)
                     ele["audio_start"] = float(start_sec)
                     ele["audio_end"] = float(end_sec)
                     audio_found = True
@@ -117,26 +135,37 @@ def grpo_build_datasets(instruct, processor):
                     image_found = True
 
         solution = conversation[2]['content'][0]['text']
-        del conversation[2]
-        
-        prompt = processor.apply_chat_template(conversation, add_generation_prompt=True)
-        #audios, images, videos = process_mm_info(conversation, use_audio_in_video=False)
-        current_object = {
-            "prompt": prompt,
-            "solution": solution,
-        }
+        #del conversation[2]
+        del conversation[0]
+
+        audios, images, videos = process_mm_info(
+            conversation, use_audio_in_video=False)
+        converted = [
+            {
+                "role": item["role"],
+                "content": next(
+                    (ele["text"] for ele in item["content"]
+                     if ele["type"] not in ("audio", "image")),
+                    ""
+                )
+            }
+            for item in conversation
+        ]
+
+        current_object = {'messages': converted, "solution": solution}
+        current_object['audios'] = []
+        current_object['images'] = []
         if images != None:
-            current_object['image'] = images[0]   
+            current_object['images'] = images
         if audios != None:
-            current_object['audio'] = audios[0]
-
-        if image_found == False:
-            continue
-        if audio_found == False:
-            continue 
-        datasets.append({'messages' : current_object})
-
+            current_object['audios'] = [numpy_to_wav_bytes(audios[0], 16000)] #[{'bytes': numpy_to_wav_bytes(audios[0], 16000)}] #[numpy_to_wav_bytes(audios[0], 16000)]
+        # if image_found == False:
+        #     continue
+        # if audio_found == False:
+        #     continue
+        datasets.append(current_object)
     return datasets
+
 
 def get_prefix(modalities):
     parts = []
@@ -149,7 +178,7 @@ def get_prefix(modalities):
 
     if not parts:
         return "Based on the available data"
-    
+
     if len(parts) == 1:
         return f"From the given {parts[0]}"
     elif len(parts) == 2:
@@ -157,11 +186,14 @@ def get_prefix(modalities):
     else:
         return f"From the given {parts[0]}, {parts[1]}, and {parts[2]}"
 
+
 def generate_tb_response(modalities, llm_analyze_symptoms, llm_analyze_image, positive=True):
     llm_analyze_image = llm_analyze_image[2:]
-    prefix = get_prefix(modalities) + ", Let me Analyze your regrading your questions.\n\n"
-    #templates = const_variable.positive_templates if positive else const_variable.negative_templates
-    sentence_tb = "Positive Tuberculosis" if positive else "Negative Tuberculosis" #random.choice(templates)
+    prefix = get_prefix(modalities) + \
+        ", Let me Analyze your regrading your questions.\n\n"
+    # templates = const_variable.positive_templates if positive else const_variable.negative_templates
+    # random.choice(templates)
+    sentence_tb = "Positive Tuberculosis" if positive else "Negative Tuberculosis"
 
     missing_notes = []
     if "audio" not in modalities:
@@ -175,10 +207,11 @@ def generate_tb_response(modalities, llm_analyze_symptoms, llm_analyze_image, po
     if missing_notes:
         review_message = review_message + "\n".join(missing_notes) + "\n\n"
     else:
-        review_message = "*   All modalities are present.\n"  # or "All modalities are present." if you prefer
+        # or "All modalities are present." if you prefer
+        review_message = "*   All modalities are present.\n"
     review_message += "This is a preliminary interpretation based on given data and does not replace a comprehensive clinical evaluation. A definitive diagnosis requires a additional clinical evaluation, including the physical examination findings, Cough Sound, Auscultation Sound, and imaging studies.\n"
 
-    #overview_message = f"## 🧠 Overview\n{sentence_tb}\n\n"
+    # overview_message = f"## 🧠 Overview\n{sentence_tb}\n\n"
     orbservation_message = f"## 📋 Observations\n"
     if "symptoms" in modalities:
         orbservation_message += f"**Symptoms:**\n*   {llm_analyze_symptoms}\n\n"
@@ -188,6 +221,7 @@ def generate_tb_response(modalities, llm_analyze_symptoms, llm_analyze_image, po
         orbservation_message += f"**Audio:**\n*   Will be Implemented Soon"
     orbservation_message = orbservation_message.rstrip("\n")
     return f"<think>{prefix}{review_message}{orbservation_message}</think>\n\n<answer>{sentence_tb}</answer>"
+
 
 class StopOnMultiToken(StoppingCriteria):
     def __init__(self, stop_token_ids):

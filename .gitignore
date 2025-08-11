@@ -4,3 +4,4 @@ datas
 *.pyc
 *.code-workspace
 .env
+logfile.log
