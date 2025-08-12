@@ -211,7 +211,7 @@ def generate_tb_response(modalities, llm_analyze_symptoms, llm_analyze_image, po
         review_message = "*   All modalities are present.\n"
     review_message += "This is a preliminary interpretation based on given data and does not replace a comprehensive clinical evaluation. A definitive diagnosis requires a additional clinical evaluation, including the physical examination findings, Cough Sound, Auscultation Sound, and imaging studies.\n"
 
-    # overview_message = f"## 🧠 Overview\n{sentence_tb}\n\n"
+    overview_message = f"## 🧠 Overview\n<answer>{sentence_tb}</answer>\n\n"
     orbservation_message = f"## 📋 Observations\n"
     if "symptoms" in modalities:
         orbservation_message += f"**Symptoms:**\n*   {llm_analyze_symptoms}\n\n"
@@ -220,7 +220,8 @@ def generate_tb_response(modalities, llm_analyze_symptoms, llm_analyze_image, po
     if "audio" in modalities:
         orbservation_message += f"**Audio:**\n*   Will be Implemented Soon"
     orbservation_message = orbservation_message.rstrip("\n")
-    return f"<think>{prefix}{review_message}{orbservation_message}</think>\n\n<answer>{sentence_tb}</answer>"
+    #return f"<think>{prefix}{review_message}{orbservation_message}</think>\n\n<answer>{sentence_tb}</answer>"
+    return f"{prefix}{review_message}{overview_message}{orbservation_message}"
 
 
 class StopOnMultiToken(StoppingCriteria):

@@ -24,7 +24,7 @@ seed_everything(42)
 # Hyperparameters for training
 os.environ.update({
     "MAX_PIXELS": "1003520", # 250880 501760 1003520
-    "NPROC_PER_NODE": "4",
+    "NPROC_PER_NODE": "2",
     "ENABLE_AUDIO_OUTPUT": "0",
     "CUDA_VISIBLE_DEVICES": "0,1",
     "PYTORCH_CUDA_ALLOC_CONF" : "expandable_segments:True"
@@ -82,7 +82,7 @@ cfg = RLHFArguments(
     #padding_side='left',
     label_names=['solution'],
     #device_map="none",
-    deepspeed=None,
+    deepspeed='zero2',
     log_entropy=True,
     top_entropy_quantile=0.2, #katanya sih more faster learning
     log_completions=True,

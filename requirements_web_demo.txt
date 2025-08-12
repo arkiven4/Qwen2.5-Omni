@@ -23,3 +23,5 @@ modelscope_studio==1.2.2
 transformers==4.52.3
 accelerate
 av
+deepspeed
+decord

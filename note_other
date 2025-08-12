@@ -1,2 +1,4 @@
 !pip install flash-attn --no-build-isolation
 CUDA_VISIBLE_DEVICES=0,1 python try_train.py
+
+CUDA_VISIBLE_DEVICES=0,1 NPROC_PER_NODE=2 deepspeed --num_gpus=2 try_train.py --deepspeed ds_config.json

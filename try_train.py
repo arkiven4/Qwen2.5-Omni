@@ -1,13 +1,24 @@
-import pickle, os, re, random, torch
+import pickle, os, re, random, torch, json
 from peft import get_peft_model, LoraConfig, TaskType, get_peft_model_state_dict
 from qwen_omni_utils import process_mm_info
 from trl import SFTTrainer, SFTConfig
 from my_qwenwrapper import get_OmniModel
 from sentence_transformers import SentenceTransformer, util
+from datetime import datetime
 
 import commons
 import const_variable
 from my_datasets import QwenOmniFinetuneDataset
+
+import re
+def clean_text_for_log(text):
+    # Replace any CR, LF, CRLF with literal \n
+    text = re.sub(r'[\r\n]+', r'\\n', text)
+    # Optionally replace tabs with space
+    text = text.replace('\t', ' ')
+    # Strip leading/trailing spaces
+    text = text.strip()
+    return text
 
 import logging, warnings
 class SuppressMultipleWarnings(logging.Filter):
@@ -24,34 +35,14 @@ logging.getLogger().addFilter(SuppressMultipleWarnings())
 # warnings.filterwarnings("ignore", message=r"Trainer\.tokenizer.*deprecated")
 os.environ["PYTORCH_CUDA_ALLOC_CONF"] = "expandable_segments:True"
 
-embedder = SentenceTransformer('all-MiniLM-L6-v2')
-pos_embeds = embedder.encode(const_variable.positive_templates, convert_to_tensor=True)
-neg_embeds = embedder.encode(const_variable.negative_templates, convert_to_tensor=True)
+# embedder = SentenceTransformer('all-MiniLM-L6-v2')
+# pos_embeds = embedder.encode(const_variable.positive_templates, convert_to_tensor=True)
+# neg_embeds = embedder.encode(const_variable.negative_templates, convert_to_tensor=True)
 
-def get_label_fromprompt(text, threshold=0.7):
-    #match = re.search(r"## 🧠 Overview\s*(.*?)\s*(##|$)", text, re.DOTALL)
-    #sentence = match.group(1).strip() if match else None
-    sentence = [line.strip() for line in text.split("\n") if line.strip()][-1]
-
-    if sentence is None:
-        return random.randint(2, 4)
-    
-    # Compute embedding for sentence
-    sent_embed = embedder.encode(sentence, convert_to_tensor=True)
-
-    # Compute cosine similarities
-    pos_sim = util.cos_sim(sent_embed, pos_embeds)  # shape: (1, N_pos)
-    neg_sim = util.cos_sim(sent_embed, neg_embeds)  # shape: (1, N_neg)
-
-    mean_pos_sim = pos_sim.mean().item()
-    mean_neg_sim = neg_sim.mean().item()
-    
-    if mean_pos_sim > mean_neg_sim: # mean_pos_sim >= threshold and 
-        return 1
-    elif mean_neg_sim > mean_pos_sim:
-        return 0
-    else:
-        return random.randint(2, 4)
+def get_label_fromprompt(text):
+    sol_match = re.search(r'<answer>(.*?)</answer>', text, flags=re.IGNORECASE)
+    ground_truth = sol_match.group(1).strip() if sol_match else text.strip()
+    return ground_truth
 
 def collate_fn(conversations):
     tb_labels = [get_label_fromprompt(conversation[-1]['content'][0]['text']) for conversation in conversations]
@@ -84,20 +75,20 @@ commons.pretty_status("🧠 Loading Model...")
 
 peft_config = LoraConfig(task_type=TaskType.CAUSAL_LM, 
                         inference_mode=False, 
-                        r=3, 
-                        lora_alpha=6, 
+                        r=4, 
+                        lora_alpha=8, 
                         lora_dropout=0.05, 
                         target_modules=["q_proj", "k_proj", "v_proj", "o_proj", "gate_proj", "up_proj", "down_proj"])
 
 model, processor = get_OmniModel(model_path="Qwen/Qwen2.5-Omni-3B", processor_path="Qwen/Qwen2.5-Omni-3B", 
-                                use_flash_attention=True, only_processor=False, quantize_4bit=True, 
-                                offload_folder="offload", set_eval=False)
+                                use_flash_attention=True, only_processor=False, quantize_4bit=False, 
+                                offload_folder=None, set_eval=False)
 
 ###
 # How about we finetuning the audio and image encoder, not using PEFT, or increase PEFT to audio and image encoder
 
 #model = prepare_model_for_kbit_training(model, use_gradient_checkpointing=True)
-model.gradient_checkpointing_enable()
+#model.gradient_checkpointing_enable() # Not Work If Deepspeed
 model.enable_input_require_grads()
 peft_model = get_peft_model(model, peft_config)
 peft_model.print_trainable_parameters()
@@ -106,10 +97,10 @@ del peft_model
 
 ##########################################################################################################
 commons.pretty_status("📦 Loading Dataset...")
-with open('datas/instruct_noreasoning.pkl.train', 'rb') as f:
+with open('datas/instruct_sft_balance.pkl.train', 'rb') as f:
     train_instruct = commons.load_image_PIL(pickle.load(f))
 
-with open('datas/instruct_noreasoning.pkl.dev', 'rb') as f:
+with open('datas/instruct_sft_balance.pkl.dev', 'rb') as f:
     dev_instruct = commons.load_image_PIL(pickle.load(f))
 
 train_dataset = QwenOmniFinetuneDataset(train_instruct, processor, use_audio_in_video=False)
@@ -119,13 +110,13 @@ print(train_dataset[0])
 ##########################################################################################################
 commons.pretty_status("🚀 Start Training!")
 training_args = SFTConfig(
-    output_dir="outputs/qwen25omni3b-noreason-notallpresent-trl-sft-sentencetrans",  # Directory to save the model
-    logging_dir='outputs/qwen25omni3b-noreason-notallpresent-trl-sft-sentencetrans/logs',
+    output_dir="outputs/qwen25omni3b-reason-notallpresent-trl-sft-balance",  # Directory to save the model
+    logging_dir='outputs/qwen25omni3b-reason-notallpresent-trl-sft-balance/logs',
     num_train_epochs=3,  # Number of training epochs
-    per_device_train_batch_size=1,  # Batch size for training
+    per_device_train_batch_size=2,  # Batch size for training
     per_device_eval_batch_size=1,  # Batch size for evaluation
-    gradient_accumulation_steps=16,  # Steps to accumulate gradients
-    gradient_checkpointing=True,  # Enable gradient checkpointing for memory efficiency
+    gradient_accumulation_steps=8,  # Steps to accumulate gradients
+    gradient_checkpointing=True,  # Enable gradient checkpointing for memory efficiency, Use Internal For Deepspeed
     # Optimizer and scheduler settings
     optim="adamw_torch_fused",  # Optimizer type
     learning_rate=2e-5,  # Learning rate for training
@@ -205,20 +196,28 @@ class CustomSFTTrainer(SFTTrainer):
             generated_texts = self.processing_class.batch_decode(predictions, skip_special_tokens=True)
             pred_labels = [get_label_fromprompt(text) for text in generated_texts]
 
-            pred_tensor = torch.tensor(pred_labels, device=self.accelerator.device)
-            true_tensor = torch.tensor(inputs["tb_labels"], device=self.accelerator.device)
+            with open("generated_texts_log.log", "a", encoding="utf-8") as f:
+                for text, pred_label, ref_label in zip(generated_texts, pred_labels, inputs["tb_labels"]):
+                    timestamp = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+                    clean_text = json.dumps(text.strip())
+                    f.write(f"[LOG: {timestamp}] Generated: {clean_text} \n| Pred: {pred_label} | Ref: {ref_label}\n")
 
-            pred_tensor = self.accelerator.gather_for_metrics(pred_tensor)
-            true_tensor = self.accelerator.gather_for_metrics(true_tensor)
+            TP, TN, FP, FN = 0, 0, 0, 0
+            for pred, truth in zip(pred_labels, inputs["tb_labels"]):
+                pred_is_pos = "positive" in pred.lower().strip()
+                truth_is_pos = "positive" in truth.lower().strip()
 
-            TP = ((pred_tensor == 1) & (true_tensor == 1)).sum().item()
-            TN = ((pred_tensor == 0) & (true_tensor == 0)).sum().item()
-            FP = ((pred_tensor == 1) & (true_tensor == 0)).sum().item()
-            FN = ((pred_tensor == 0) & (true_tensor == 1)).sum().item()
+                if pred_is_pos and truth_is_pos:
+                    TP += 1
+                elif not pred_is_pos and not truth_is_pos:
+                    TN += 1
+                elif pred_is_pos and not truth_is_pos:
+                    FP += 1
+                elif not pred_is_pos and truth_is_pos:
+                    FN += 1
 
-            acc = (TP + TN) / (TP + TN + FP + FN) if (TP + TN + FP + FN) > 0 else 0.0
-            sensitivity = TP / (TP + FN) if (TP + FN) > 0 else 0.0
-
+            acc = (TP + TN) / (TP + TN + FP + FN) if (TP + TN + FP + FN) else 0
+            sensitivity = TP / (TP + FN) if (TP + FN) else 0
             self._metrics[mode]["sentence_accuracy"].append(acc)
             self._metrics[mode]["sentence_sensitivity"].append(sensitivity)
         

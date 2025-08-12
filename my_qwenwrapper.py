@@ -37,7 +37,6 @@ def get_OmniModel(model_path="Qwen/Qwen2.5-Omni-3B", adapter_path=None, processo
 
     model_kwargs = {
         "torch_dtype": torch.bfloat16 if quantize_4bit else "auto",
-        "device_map": "auto",
         "quantization_config": bnb_config,
         "attn_implementation": attn_implementation,
     }
