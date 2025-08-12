@@ -38,8 +38,8 @@ cfg = RLHFArguments(
     overwrite_output_dir=True,
     rlhf_type="grpo",
     model="Qwen/Qwen2.5-Omni-3B",
-    reward_funcs=["accuracy", "format", "cosine", "repetition"],
-    reward_weights=[1.0, 1.0, 1.0, 1.0],
+    reward_funcs=["external_r1v_acc", "format", "external_r1v_cosine", "repetition"],
+    reward_weights=[2.0, 1.0, 1.0, 1.0],
     train_type="lora",
     lora_rank=4,
     lora_alpha=8,
@@ -64,7 +64,7 @@ cfg = RLHFArguments(
     bnb_4bit_compute_dtype='bfloat16',
     bnb_4bit_use_double_quant=True,
     attn_impl='flash_attention_2',
-    gradient_checkpointing=True,
+    #gradient_checkpointing=True,
     freeze_vit=True,
     gradient_accumulation_steps=1,
     eval_steps=100,
@@ -84,14 +84,14 @@ cfg = RLHFArguments(
     #device_map="none",
     deepspeed=None,
     log_entropy=True,
-    #top_entropy_quantile=0.2, katanya sih more faster learning
+    top_entropy_quantile=0.2, #katanya sih more faster learning
     log_completions=True,
     # GSPO
-    importance_sampling_level='sequence', # deafault : token
-    epsilon=3e-4, # from paper section 5.1
-    epsilon_high=4e-4, # from paper section 5.1
-    # steps_per_generation=4, # from paper section 5.1 (each batch of rollout data is partitioned into four minibatches for gradient updates)
-    beta=0 # zero kl regularization https://github.com/volcengine/verl/pull/2775#issuecomment-3131807306
+    # importance_sampling_level='sequence', # deafault : token
+    # epsilon=3e-4, # from paper section 5.1
+    # epsilon_high=4e-4, # from paper section 5.1
+    # # steps_per_generation=4, # from paper section 5.1 (each batch of rollout data is partitioned into four minibatches for gradient updates)
+    # beta=0 # zero kl regularization https://github.com/volcengine/verl/pull/2775#issuecomment-3131807306
 )
 
 trainer = rlhf_main(args=cfg)

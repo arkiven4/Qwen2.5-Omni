@@ -2,6 +2,19 @@
 gradio==5.23.1
 gradio_client==1.8.0
 qwen-omni-utils==0.0.4
+
+# Optional dependency
+# Uncomment the following line if you need flash-attn
+# flash-attn==2.7.4.post1
+
+ms-swift
+soundfile
+qwen_omni_utils
+torchvision
+torchaudio
+math_verify==0.5.2
+bitsandbytes
+dotenv
 librosa==0.11.0
 ffmpeg==1.4
 ffmpeg-python==0.2.0
@@ -10,7 +23,3 @@ modelscope_studio==1.2.2
 transformers==4.52.3
 accelerate
 av
-
-# Optional dependency
-# Uncomment the following line if you need flash-attn
-# flash-attn==2.7.4.post1

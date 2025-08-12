@@ -140,9 +140,7 @@ class CountdownORM(ORM):
                 rewards.append(0.0)
         return rewards
 
-
-class MultiModalAccuracyORM(ORM):
-
+class MultiModalAccuracyORM(ORM): 
     def __call__(self, completions, solution, **kwargs) -> List[float]:
         """
         Reward function that checks if the completion is correct.
@@ -154,36 +152,69 @@ class MultiModalAccuracyORM(ORM):
             list[float]: Reward scores
         """
         rewards = []
-        from math_verify import parse, verify
         for content, sol in zip(completions, solution):
             reward = 0.0
-            # Try symbolic verification first
             try:
-                answer = parse(content)
-                if float(verify(answer, parse(sol))) > 0:
+                # Extract answer from solution if it has <answer> tags
+                sol_match = re.search(r'<answer>(.*?)</answer>', sol, flags=re.IGNORECASE)
+                ground_truth = sol_match.group(1).strip() if sol_match else sol.strip()
+
+                # Extract answer from content if it has <answer> tags
+                content_match = re.search(r'<answer>(.*?)</answer>', content, flags=re.IGNORECASE)
+                student_answer = content_match.group(1).strip() if content_match else content.strip()
+
+                # Exact match -> full reward
+                if student_answer.lower() == ground_truth.lower():
                     reward = 1.0
+                # Partial match -> half reward
+                elif student_answer.lower() in ground_truth.lower() or ground_truth.lower() in student_answer.lower():
+                    reward = 0.5
             except Exception:
-                pass  # Continue to next verification method if this fails
+                pass  # Keep reward as 0.0 if extraction fails
 
-            # If symbolic verification failed, try string matching
-            if reward == 0.0:
-                try:
-                    # Extract answer from solution if it has think/answer tags
-                    sol_match = re.search(r'<answer>(.*?)</answer>', sol)
-                    ground_truth = sol_match.group(1).strip() if sol_match else sol.strip()
-
-                    # Extract answer from content if it has think/answer tags
-                    content_match = re.search(r'<answer>(.*?)</answer>', content)
-                    student_answer = content_match.group(1).strip() if content_match else content.strip()
-
-                    # Compare the extracted answers
-                    if student_answer == ground_truth:
-                        reward = 1.0
-                except Exception:
-                    pass  # Keep reward as 0.0 if both methods fail
             rewards.append(reward)
         return rewards
 
+class CustomCosineReward(ORM):
+    # https://arxiv.org/abs/2502.03373
+    def __init__(self,
+                 tokenizer=None,
+                 cosine_min_len_value_wrong: float = -0.5,
+                 cosine_max_len_value_wrong: float = 0.0,
+                 cosine_min_len_value_correct: float = 1.0,
+                 cosine_max_len_value_correct: float = 0.5,
+                 cosine_max_len: int = 1000,
+                 accuracy_orm=None):
+        self.tokenizer = tokenizer
+        self.min_len_value_wrong = cosine_min_len_value_wrong
+        self.max_len_value_wrong = cosine_max_len_value_wrong
+        self.min_len_value_correct = cosine_min_len_value_correct
+        self.max_len_value_correct = cosine_max_len_value_correct
+        self.max_len = cosine_max_len
+        self.accuracy_orm = MultiModalAccuracyORM()
+        print("Using CustomCosineReward")
+
+    @staticmethod
+    def cosfn(t, T, min_value, max_value):
+        import math
+        return max_value - (max_value - min_value) * (1 - math.cos(t * math.pi / T)) / 2
+
+    def __call__(self, completions, solution, **kwargs) -> List[float]:
+        acc_rewards = self.accuracy_orm(completions, solution, **kwargs)
+        rewards = []
+        for content, acc_reward in zip(completions, acc_rewards):
+            is_correct = acc_reward >= 1.
+            if is_correct:
+                # Swap min/max for correct answers
+                min_value = self.max_len_value_correct
+                max_value = self.min_len_value_correct
+            else:
+                min_value = self.max_len_value_wrong
+                max_value = self.min_len_value_wrong
+            gen_len = len(self.tokenizer.encode(content))
+            reward = self.cosfn(gen_len, self.max_len, min_value, max_value)
+            rewards.append(reward)
+        return rewards
 
 # ref implementation: https://github.com/huggingface/open-r1/blob/main/src/open_r1/rewards.py
 class CodeReward(ORM):
@@ -706,6 +737,7 @@ orms['external_math_acc'] = MathAccuracy
 orms['external_math_format'] = MathFormat
 orms['external_countdown'] = CountdownORM
 orms['external_r1v_acc'] = MultiModalAccuracyORM
+orms['external_r1v_cosine'] = CustomCosineReward
 orms['external_code_reward'] = CodeReward
 orms['external_code_format'] = CodeFormat
 orms['external_code_reward_by_judge0'] = CodeRewardByJudge0
