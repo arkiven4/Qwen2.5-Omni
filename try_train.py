@@ -40,9 +40,9 @@ os.environ["PYTORCH_CUDA_ALLOC_CONF"] = "expandable_segments:True"
 # neg_embeds = embedder.encode(const_variable.negative_templates, convert_to_tensor=True)
 
 def get_label_fromprompt(text):
-    sol_match = re.search(r'<answer>(.*?)</answer>', text, flags=re.IGNORECASE)
-    ground_truth = sol_match.group(1).strip() if sol_match else text.strip()
-    return ground_truth
+    matches = re.findall(r"<answer>(.*?)</answer>", text, flags=re.IGNORECASE | re.DOTALL)
+    last_answer = matches[-1].strip() if matches else text.strip()
+    return last_answer
 
 def collate_fn(conversations):
     tb_labels = [get_label_fromprompt(conversation[-1]['content'][0]['text']) for conversation in conversations]
@@ -112,7 +112,7 @@ commons.pretty_status("🚀 Start Training!")
 training_args = SFTConfig(
     output_dir="outputs/qwen25omni3b-reason-notallpresent-trl-sft-balance",  # Directory to save the model
     logging_dir='outputs/qwen25omni3b-reason-notallpresent-trl-sft-balance/logs',
-    num_train_epochs=3,  # Number of training epochs
+    num_train_epochs=10,  # Number of training epochs
     per_device_train_batch_size=2,  # Batch size for training
     per_device_eval_batch_size=1,  # Batch size for evaluation
     gradient_accumulation_steps=8,  # Steps to accumulate gradients
@@ -123,10 +123,10 @@ training_args = SFTConfig(
     lr_scheduler_type="constant",  # Type of learning rate scheduler
     # Logging and evaluation
     logging_steps=10,  # Steps interval for logging
-    eval_steps=500,  # Steps interval for evaluation
+    eval_steps=100,  # Steps interval for evaluation
     eval_strategy="steps",  # Strategy for evaluation
     save_strategy="steps",  # Strategy for saving the model
-    save_steps=500,  # Steps interval for saving
+    save_steps=100,  # Steps interval for saving
     metric_for_best_model="eval_loss",  # Metric to evaluate the best model
     greater_is_better=False,  # Whether higher metric values are better
     load_best_model_at_end=False,  # Load the best model after training
@@ -193,14 +193,8 @@ class CustomSFTTrainer(SFTTrainer):
         acc = 0.0
         sensitivity = 0.0
         if "tb_labels" in inputs:
-            generated_texts = self.processing_class.batch_decode(predictions, skip_special_tokens=True)
+            generated_texts = self.processing_class.batch_decode(predictions, skip_special_tokens=False)
             pred_labels = [get_label_fromprompt(text) for text in generated_texts]
-
-            with open("generated_texts_log.log", "a", encoding="utf-8") as f:
-                for text, pred_label, ref_label in zip(generated_texts, pred_labels, inputs["tb_labels"]):
-                    timestamp = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
-                    clean_text = json.dumps(text.strip())
-                    f.write(f"[LOG: {timestamp}] Generated: {clean_text} \n| Pred: {pred_label} | Ref: {ref_label}\n")
 
             TP, TN, FP, FN = 0, 0, 0, 0
             for pred, truth in zip(pred_labels, inputs["tb_labels"]):
@@ -218,6 +212,12 @@ class CustomSFTTrainer(SFTTrainer):
 
             acc = (TP + TN) / (TP + TN + FP + FN) if (TP + TN + FP + FN) else 0
             sensitivity = TP / (TP + FN) if (TP + FN) else 0
+            if sensitivity < 0.3 or acc < 0.4:
+                with open("generated_texts.log", "a", encoding="utf-8") as f:
+                    for text, pred_label, ref_label in zip(generated_texts, pred_labels, inputs["tb_labels"]):
+                        timestamp = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+                        clean_text = json.dumps(text.strip())
+                        f.write(f"[LOG: {timestamp}] Generated: {clean_text} \n| Pred: {pred_label} | Ref: {ref_label}\n")
             self._metrics[mode]["sentence_accuracy"].append(acc)
             self._metrics[mode]["sentence_sensitivity"].append(sensitivity)
         
@@ -238,6 +238,6 @@ trainer = CustomSFTTrainer(
     processing_class=processor,
 )
 
-trainer.train()
-#trainer.train(resume_from_checkpoint=f"{training_args.output_dir}/checkpoint-2000")
+#trainer.train()
+trainer.train(resume_from_checkpoint=f"{training_args.output_dir}/checkpoint-333")
 trainer.save_model(training_args.output_dir)

@@ -2,3 +2,28 @@
 CUDA_VISIBLE_DEVICES=0,1 python try_train.py
 
 CUDA_VISIBLE_DEVICES=0,1 NPROC_PER_NODE=2 deepspeed --num_gpus=2 try_train.py --deepspeed ds_config.json
+
+module load cuda
+srun -p gpu_intr --gres=gpu:2 -c 8 -n 2 --time=8:00:00 --pty bash -l
+srun -p gpu_intr --gres=gpu:2 -c 12 -n 2 --mem=128G --time=2:00:00 --pty bash -l
+sbatch -p gpu_long --gres=gpu:2 -c 16 -n 2 --mem=128G --time=48:00:00 run_qwen.sh
+
+sinfo -s
+squeue
+scontrol show job 3730512
+sstat -j 3730511
+
+scancel 3730509
+
+
+curl -LsSf https://astral.sh/uv/install.sh | sh
+uv init .
+uv install -r Qwen2.5-Omni/requirements_web_demo.txt
+
+cd Qwen2.5-Omni
+uv run 2.TrainGRPO.py
+
+uv run tensorboard --logdir
+
+
+
