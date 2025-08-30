@@ -40,13 +40,29 @@ def crop_and_convertNP(path_file):
     array_PIL = Image.fromarray(cropped_array)
     return array_PIL
 
+def crop_and_convertJPG(path_file, max_size=768):
+    array_PIL = Image.open(path_file)
+    
+    width, height = array_PIL.size
+    max_dim = max(width, height)
+    
+    if max_dim > max_size:
+        scale = max_size / max_dim
+        new_width = int(width * scale)
+        new_height = int(height * scale)
+        array_PIL = array_PIL.resize((new_width, new_height), resample=Image.Resampling.LANCZOS)
+    
+    return array_PIL
 
-def load_image_PIL(loaded_object):
+def load_image_PIL(loaded_object, direct=False):
     for obj in tqdm(loaded_object):
         for message in obj.get("messages", []):
             for content in message.get("content", []):
                 if isinstance(content, dict) and "image" in content:
-                    content["image"] = crop_and_convertNP(content["image"])
+                    if direct:
+                        content["image"] = crop_and_convertJPG(content["image"])
+                    else:
+                        content["image"] = crop_and_convertNP(content["image"])
     return loaded_object
 
 
@@ -118,28 +134,20 @@ def numpy_to_wav_bytes(audio_array: np.ndarray, sr: int) -> bytes:
 def grpo_build_datasets(instruct, processor):
     datasets = []
     for sample in tqdm(instruct):
-        image_found = False
-        audio_found = False
         conversation = copy.deepcopy(sample["messages"])
         for ele in conversation[1]['content']:
             if ele["type"] == "audio":
                 if "audio" in ele or "audio_url" in ele:
                     path = ele.get("audio", ele.get("audio_url"))
-                    start_sec, end_sec = random_3sec_segment(
-                        path, segment_duration=3.0)
+                    start_sec, end_sec = random_3sec_segment(path, segment_duration=3.0)
                     ele["audio_start"] = float(start_sec)
                     ele["audio_end"] = float(end_sec)
-                    audio_found = True
-            if ele["type"] == "image":
-                if "image" in ele or "audio_url" in ele:
-                    image_found = True
 
         solution = conversation[2]['content'][0]['text']
         #del conversation[2]
         del conversation[0]
 
-        audios, images, videos = process_mm_info(
-            conversation, use_audio_in_video=False)
+        audios, images, videos = process_mm_info(conversation, use_audio_in_video=False)
         converted = [
             {
                 "role": item["role"],
@@ -159,10 +167,6 @@ def grpo_build_datasets(instruct, processor):
             current_object['images'] = images
         if audios != None:
             current_object['audios'] = [numpy_to_wav_bytes(audios[0], 16000)] #[{'bytes': numpy_to_wav_bytes(audios[0], 16000)}] #[numpy_to_wav_bytes(audios[0], 16000)]
-        # if image_found == False:
-        #     continue
-        # if audio_found == False:
-        #     continue
         datasets.append(current_object)
     return datasets
 
@@ -187,7 +191,7 @@ def get_prefix(modalities):
         return f"From the given {parts[0]}, {parts[1]}, and {parts[2]}"
 
 
-def generate_tb_response(modalities, llm_analyze_symptoms, llm_analyze_image, positive=True):
+def generate_tb_response(modalities, llm_analyze_symptoms, llm_analyze_image, positive=True, grpo=False):
     llm_analyze_image = llm_analyze_image[2:]
     prefix = get_prefix(modalities) + \
         ", Let me Analyze your regrading your questions.\n\n"
@@ -220,8 +224,10 @@ def generate_tb_response(modalities, llm_analyze_symptoms, llm_analyze_image, po
     if "audio" in modalities:
         orbservation_message += f"**Audio:**\n*   Will be Implemented Soon"
     orbservation_message = orbservation_message.rstrip("\n")
-    return f"<think>{prefix}{review_message}{orbservation_message}</think>\n\n<answer>{sentence_tb}</answer>"
-    #return f"{prefix}{review_message}{overview_message}{orbservation_message}"
+    if grpo:
+        return f"<think>{prefix}{review_message}{orbservation_message}</think>\n\n<answer>{sentence_tb}</answer>"
+    else:
+        return f"{prefix}{review_message}{overview_message}{orbservation_message}"
 
 
 class StopOnMultiToken(StoppingCriteria):

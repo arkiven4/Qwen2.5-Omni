@@ -6,3 +6,4 @@ datas
 .env
 logfile.log
 *.log
+.cache
